@@ -74,7 +74,7 @@ const Navbar = () => {
                                 animate={{ opacity: 1, y: 20 }}
                                 exit={{ opacity: 0, y: -20 }}
                                 transition={{ duration: 0.6, ease: "easeInOut" }}
-                                className="bg-[#F5EFFF] rounded-md p-6 flex gap-6 absolute justify-center items-start top-16 "
+                                className="bg-[#ffffff] shadow-lg border-[1px] border-gray-300 rounded-md p-6 flex gap-6 absolute justify-center items-start top-16 "
                                 onMouseLeave={handelMouseLeave}
                             >
                                 <ul className="flex flex-col gap-4 w-48">
@@ -97,7 +97,7 @@ const Navbar = () => {
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, y: -20 }}
                                         transition={{ duration: 0.6, ease: "easeInOut" }}
-                                        className="px-8 py-6 flex flex-col gap-4 items-center w-48 bg-[#EDE7FE] rounded-md">
+                                        className="px-8 py-6 flex flex-col gap-4 items-center w-48 bg-[#ae99d8] rounded-md">
                                         <p className="border-b-2 border-b-black">{subCategory}</p>
                                         {categories[subCategory].map((sub) => (
                                             <motion.li
@@ -161,7 +161,7 @@ const Navbar = () => {
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: -20 }}
                                     transition={{ duration: 0.6, ease: "easeInOut" }}
-                                    className='absolute top-16 right-9 px-5 py-8 text-black w-64 bg-[#F5EFFF]'>
+                                    className='absolute top-16 right-9 px-5 py-8 text-black  w-80 rounded-md bg-[#ffffff] shadow-lg border-[1px] border-gray-300  z-20'>
                                     <div className='flex gap-5 '>
                                         <div className='cursor-pointer relative bg-black flex items-center justify-center p-4 rounded-full transition '>
                                             <p className='text-white'>AG</p>
