@@ -1,20 +1,48 @@
 import React, { useState } from 'react';
 import AuthImagePatternSignIn from '../components/skeletons/AuthImagePatternSign';
-import { Eye, EyeOff, Loader2, Lock, Mail, MessageSquare, User } from 'lucide-react';
+import { Eye, EyeOff, Loader, Lock, Mail, MessageSquare, User } from 'lucide-react';
 import { useAuthStore } from '../../store/useAuthStore';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
+
+
+
+type EventChange = {
+    target:{
+        name:string
+        value:string
+    }
+}
 const SignIn = () => {
-    const {  isLoggingIn } = useAuthStore();
+    const {  isLoggingIn,signIn } = useAuthStore();
     const [showPassword, setShowPassword] = useState(false);
     const [formData,setFormData] = useState({email:"",password:""});
+    const handleChange = (evt:EventChange) =>{
+        const {name,value} = evt.target;
+        setFormData((prev)=>({
+            ...prev, [name]:value
+        }))
+    }
+
     
 
     const validateUser = () =>{
-        
+        if(!formData.email) return toast.error("Email is required");
+        if(!formData.password) return toast.error("Password is required");
+        if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) return toast.error("Invalid email format")
+        return true;
     }
 
+
+    const handleSubmit = (e:any) =>{
+        e.preventDefault();
+        const success = validateUser();
+        if(success === true){
+            signIn(formData);
+          
+        }
+    }
     return (
         <div className="grid grid-cols-1 md:grid-cols-2  bg-gray-100 min-h-screen">
             <div className="flex flex-col justify-center items-center p-10 sm:p-12">
@@ -28,7 +56,7 @@ const SignIn = () => {
                             <p className="text-gray-600">Sign up today and unlock endless learning opportunities!</p>
                         </div>
                     </div>
-                    <form className="space-y-6">
+                    <form className="space-y-6" onSubmit={handleSubmit}>
                         {/* User Name Field */}
                
 
@@ -45,6 +73,9 @@ const SignIn = () => {
                                     type="email"
                                     placeholder="Enter your Email"
                                     className="input input-bordered w-full bg-white border border-gray-300 focus:ring-2 focus:ring-primary pl-10 py-3 rounded-md"
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
                                 />
                             </div>
                         </div>
@@ -62,6 +93,9 @@ const SignIn = () => {
                                     type={showPassword ? 'text' : 'password'}
                                     placeholder="********"
                                     className="input input-bordered w-full bg-white border border-gray-300 focus:ring-2 focus:ring-primary pl-10 py-3 rounded-md"
+                                    name='password'
+                                    value={formData.password}
+                                    onChange={handleChange}
                                 />
                                 <button
                                     type="button"
@@ -80,13 +114,13 @@ const SignIn = () => {
                         {/* Submit Button */}
                         <button
                             type="submit"
-                            className="bg-[#9185de] w-full py-3 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-primary"
+                            className={`bg-[#9185de] w-full py-3 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-primary ${isLoggingIn? "flex items-center justify-center" : ""}`}
                             disabled={ isLoggingIn}
                         >
                             { isLoggingIn? (
                                 <>
-                                    <Loader2 className="w-5 h-5 animate-spin" />
-                                    Loading...
+                                    <Loader className="w-5 h-5 animate-spin" />
+                                 
                                 </>
                             ) : (
                                 'Create Account'

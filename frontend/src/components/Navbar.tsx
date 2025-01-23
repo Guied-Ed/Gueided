@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { ShoppingCart } from 'lucide-react'
 import { Search, Bell, Heart, ChevronRight, LogOut, Edit, CreditCard, Wallet } from 'lucide-react'
 import { motion } from 'framer-motion'
-
+import { useAuthStore } from '../../store/useAuthStore'
 
 const categories = {
     Engineering: ['Civil', 'Mechanical', 'Electrical', 'Computer'],
@@ -15,11 +15,11 @@ const categories = {
 
 
 type myComponentProp = {
-    authUser:string | null
+    authUser: { user: { email: string ,firstName:string,lastName:string} } | null
 }
 const Navbar = ({authUser}:myComponentProp) => {
-
-
+const {logout} = useAuthStore();
+console.log(authUser);
 
 
     const [dropDown, setDropDown] = useState(false);
@@ -174,14 +174,14 @@ authUser ? (
                                     className='absolute top-16 right-9 px-5 py-8 text-black  w-80 rounded-md bg-[#ffffff] shadow-lg border-[1px] border-gray-300  z-20'>
                                     <div className='flex gap-5 '>
                                         <div className='cursor-pointer relative bg-black flex items-center justify-center p-4 rounded-full transition '>
-                                            <p className='text-white'>AG</p>
+                                            <p className='text-white'>{authUser.user.firstName[0].toUpperCase()} {authUser.user.lastName[0].toUpperCase()}</p>
                                             <div className='bg-[#9185de] w-2 h-2 rounded-full absolute top-0 right-[4px]'>
                                             </div>
                                         </div>
 
                                         <div className='mt-3'>
-                                            <p className='text-[1.2rem]'>Abdulbasit Abdulwahab Gbolahun</p>
-                                            <p className='text-[0.8rem]'>{truncateText("abdulbasitabdulwahab21@gmail.com", 15)}</p>
+                                            <p className='text-[1.2rem]'>{authUser.user.firstName} {authUser.user.lastName}</p>
+                                            <p className='text-[0.8rem]'>{truncateText(authUser?.user.email ?? '', 15)}</p>
                                         </div>
 
                                     </div>
@@ -196,7 +196,7 @@ authUser ? (
                                         transition={{ type: "spring", stiffness: 300 }}
                                         className='flex justify-between'
                                     >
-                                        <p>Log Out</p>
+                                        <p onClick={logout}>Log Out</p>
                                         <LogOut />
                                     </motion.div>
 
@@ -239,7 +239,7 @@ authUser ? (
                                 </motion.div>
                             )
                         }
-                        AG</p>
+                        {authUser.user.firstName[0].toUpperCase()} {authUser.user.lastName[0].toUpperCase()}</p>
                     <div className='bg-[#9185de] w-2 h-2 rounded-full absolute top-0 right-[4px]'>
 
                     </div>

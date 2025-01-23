@@ -1,5 +1,5 @@
 
-import { Route, Routes } from "react-router-dom"
+import { Navigate, Route, Routes } from "react-router-dom"
 import { Toaster } from "react-hot-toast"
 import Navbar from "./components/Navbar"
 import Home from "./pages/Home"
@@ -10,7 +10,7 @@ import SignIn from "./pages/SignIn";
 const App = () => {
 
 
-  const { authUser,checkAuth} = useAuthStore();
+  const { authUser, checkAuth } = useAuthStore() as { authUser: { user: { email: string,firstName:string,lastName:string } } | null, checkAuth: () => void };
 
   useEffect(()=>{
     checkAuth()
@@ -22,9 +22,9 @@ const App = () => {
 authUser ={ authUser}
 />
       <Routes >
-        <Route path="/" element={<Home/>}/>
+        <Route path="/" element={authUser ? <Home/> : <Navigate to="/signin"/>}/>
         <Route path="/signup" element={<SignUp/>}/>
-        <Route path="/signin" element={<SignIn/>}/>
+        <Route path="/signin" element={!authUser ? <SignIn/> : <Navigate to="/"/>}/>
       </Routes>
 
       <Toaster position="top-right" reverseOrder={false}/>
