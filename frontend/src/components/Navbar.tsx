@@ -12,7 +12,12 @@ const categories = {
     Agriculture: ['Crop Science', 'Animal Science', 'Agri-Tech'],
     Education: ['Teaching', 'Educational Technology', 'Special Needs Education'],
 };
-const Navbar = () => {
+
+
+type myComponentProp = {
+    authUser:string | null
+}
+const Navbar = ({authUser}:myComponentProp) => {
 
 
 
@@ -74,7 +79,7 @@ const Navbar = () => {
                                 animate={{ opacity: 1, y: 20 }}
                                 exit={{ opacity: 0, y: -20 }}
                                 transition={{ duration: 0.6, ease: "easeInOut" }}
-                                className="bg-[#ffffff] shadow-lg border-[1px] border-gray-300 rounded-md p-6 flex gap-6 absolute justify-center items-start top-16 "
+                                className="bg-[#ffffff] shadow-lg border-[1px] border-gray-300 rounded-md p-6 flex gap-6 absolute justify-center items-start top-16 z-40 "
                                 onMouseLeave={handelMouseLeave}
                             >
                                 <ul className="flex flex-col gap-4 w-48">
@@ -124,6 +129,11 @@ const Navbar = () => {
 
 
             </div>
+
+
+{
+
+authUser ? (
 
             <div className='flex items-center gap-3'>
                 <div className="cursor-pointer hover:bg-[#b4ade1] flex items-center justify-center p-2 rounded-md transition">
@@ -238,7 +248,11 @@ const Navbar = () => {
 
 
             </div>
+): <div className='flex gap-5 '>
+        <Link to="signin" className='hover:bg-[#d4d1e9] px-8 py-2 border-2 rounded-md text-[#9185de] bg-white border-[#9185de]  transform duration-300'>Login</Link>
+    <Link to="signup" className='bg-[#9185de] px-8 py-2 border-2 border-[#9185de] hover:bg-[#7e6ee9] rounded-md transform duration-300'>Signup</Link>
 
+    </div>}
         </nav>
     )
 }
