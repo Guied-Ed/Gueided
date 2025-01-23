@@ -40,7 +40,7 @@ interface UserModel extends Document{
 const userSchema = new Schema<UserModel>({
     firstName:{
         type:String,
-        required:[true, "UserName is required"]
+        required:[true, "firstName is required"]
     },
     lastName:{
         type:String, 
