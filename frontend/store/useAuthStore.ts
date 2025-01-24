@@ -34,13 +34,13 @@ export const useAuthStore = create<AuthState>((set) => ({
         set({ isSigningUp: true });
         try {
             const response = await axiosInstance.post('/signup', formData)
-            set({ authUser: response.data })
+            set({ authUser: response.data})
             toast.success("Account created successfully");
 
         } catch (error) {
             set({ isSigningUp: false })
             if (error instanceof Error) {
-                toast.error(error.message);
+                toast.error((error as any).response.data.message);
             } else {
                 toast.error('An unknown error occurred');
             }
@@ -62,7 +62,7 @@ export const useAuthStore = create<AuthState>((set) => ({
         } catch (err) {
             set({ isLoggingIn: false })
             if (err instanceof Error) {
-                toast.error(err.message)
+                toast.error((err as any).response.data.message);
             } else {
                 toast.error("Something went wrong")
             }
