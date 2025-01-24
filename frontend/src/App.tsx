@@ -23,7 +23,7 @@ authUser ={ authUser}
 />
       <Routes >
         <Route path="/" element={authUser ? <Home/> : <Navigate to="/signin"/>}/>
-        <Route path="/signup" element={<SignUp/>}/>
+        <Route path="/signup" element={!authUser ? <SignUp/>: <Navigate to = "/"/>}/>
         <Route path="/signin" element={!authUser ? <SignIn/> : <Navigate to="/"/>}/>
       </Routes>
 
