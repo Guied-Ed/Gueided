@@ -137,7 +137,7 @@ authUser ? (
 
             <div className='flex items-center gap-3'>
                 <div className="cursor-pointer hover:bg-[#b4ade1] flex items-center justify-center p-2 rounded-md transition">
-                    <Link to="">Become an Instructor</Link>
+                    <Link to="instructor">Become an Instructor</Link>
                 </div>
 
 
