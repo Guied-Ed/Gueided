@@ -7,6 +7,7 @@ import {useAuthStore}  from '../store/useAuthStore';
 import { useEffect } from "react";
 import SignUp from "./pages/SignUp";
 import SignIn from "./pages/SignIn";
+import InstructorHome from "./InstructorPages/InstructorHome";
 const App = () => {
 
 
@@ -25,6 +26,7 @@ authUser ={ authUser}
         <Route path="/" element={authUser ? <Home/> : <Navigate to="/signin"/>}/>
         <Route path="/signup" element={!authUser ? <SignUp/>: <Navigate to = "/"/>}/>
         <Route path="/signin" element={!authUser ? <SignIn/> : <Navigate to="/"/>}/>
+        <Route path="/instructor" element={<InstructorHome/>}/>
       </Routes>
 
       <Toaster position="top-right" reverseOrder={false}/>
