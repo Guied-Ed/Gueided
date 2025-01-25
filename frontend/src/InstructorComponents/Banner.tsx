@@ -7,7 +7,7 @@ const Banner = () => {
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="relative overflow-hidden rounded-lg p-8 mt-12 shadow-2xl"
+            className="relative overflow-hidden rounded-lg p-8 mt-12 shadow-2xl -z-10"
             style={{
                 background: "linear-gradient(135deg, #1c1c1c, #4a4a4a, #1c1c1c)",
                 color: "white",
