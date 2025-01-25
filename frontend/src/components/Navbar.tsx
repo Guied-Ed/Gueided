@@ -4,6 +4,7 @@ import { ShoppingCart } from 'lucide-react'
 import { Search, Bell, Heart, ChevronRight, LogOut, Edit, CreditCard, Wallet } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useAuthStore } from '../../store/useAuthStore'
+import { useLocation } from 'react-router-dom'
 
 const categories = {
     Engineering: ['Civil', 'Mechanical', 'Electrical', 'Computer'],
@@ -15,11 +16,11 @@ const categories = {
 
 
 type myComponentProp = {
-    authUser: { user: { email: string ,firstName:string,lastName:string} } | null
+    authUser: { user: { email: string, firstName: string, lastName: string } } | null
 }
-const Navbar = ({authUser}:myComponentProp) => {
-const {logout} = useAuthStore();
-console.log(authUser);
+const Navbar = ({ authUser }: myComponentProp) => {
+    const { logout } = useAuthStore();
+    console.log(authUser);
 
 
     const [dropDown, setDropDown] = useState(false);
@@ -59,12 +60,15 @@ console.log(authUser);
     const handleCategory = (category: string) => {
         setSetSubCategory(category as keyof typeof categories);
     }
+
+
+    const location = useLocation();
     return (
         <nav className='flex justify-between items-center py-4 px-2 border-b-[1px]  border-b-slate-400 w-full'>
 
             <div className='flex items-center gap-12'>
                 <ul>
-                    <Link to="home">GuidEd</Link>
+                    <Link to="/">GuidEd</Link>
                 </ul>
 
                 <div className="cursor-pointer relative hover:bg-[#b4ade1] flex items-center justify-center p-2 rounded-md transition">
@@ -131,128 +135,134 @@ console.log(authUser);
             </div>
 
 
-{
+            {
 
-authUser ? (
+                authUser ? (
 
-            <div className='flex items-center gap-3'>
-                <div className="cursor-pointer hover:bg-[#b4ade1] flex items-center justify-center p-2 rounded-md transition">
-                    <Link to="instructor">Become an Instructor</Link>
-                </div>
+                    <div className='flex items-center gap-3'>
 
 
-
-
-                <div className="cursor-pointer hover:bg-[#b4ade1] flex items-center justify-center p-2 rounded-md transition">
-                    <p>All Courses</p>
-                </div>
-
-                <div className="cursor-pointer hover:bg-[#b4ade1] flex items-center justify-center p-2 rounded-md transition">
-                    <Heart className='hover:text-[#2e2472]' />
-                </div>
-
-                <div className="cursor-pointer hover:bg-[#b4ade1] flex items-center justify-center p-2 rounded-md transition">
-                    <Bell className='hover:text-[#2e2472]' />
-                </div>
-
-                <div className=" cursor-pointer hover:bg-[#b4ade1] flex items-center justify-center p-2 rounded-md transition">
-                    <ShoppingCart className=" hover:text-[#2e2472]" />
-                </div>
-
-                <div className='cursor-pointer relative bg-black flex items-center justify-center p-2 rounded-full transition'
-                    onMouseEnter={handleProfileOpen}
-                    onMouseLeave={handleProfileClose}
-                >
-                    <p className='text-white'>
                         {
-                            profileDropDown && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: -20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -20 }}
-                                    transition={{ duration: 0.6, ease: "easeInOut" }}
-                                    className='absolute top-16 right-9 px-5 py-8 text-black  w-80 rounded-md bg-[#ffffff] shadow-lg border-[1px] border-gray-300  z-20'>
-                                    <div className='flex gap-5 '>
-                                        <div className='cursor-pointer relative bg-black flex items-center justify-center p-4 rounded-full transition '>
-                                            <p className='text-white'>{authUser.user.firstName[0].toUpperCase()} {authUser.user.lastName[0].toUpperCase()}</p>
-                                            <div className='bg-[#9185de] w-2 h-2 rounded-full absolute top-0 right-[4px]'>
-                                            </div>
-                                        </div>
+                            location.pathname !== "/instructor" && (
 
-                                        <div className='mt-3'>
-                                            <p className='text-[1.2rem]'>{authUser.user.firstName} {authUser.user.lastName}</p>
-                                            <p className='text-[0.8rem]'>{truncateText(authUser?.user.email ?? '', 15)}</p>
-                                        </div>
-
-                                    </div>
-
-                                    <hr className='my-4 h-2 w-full ' />
-
-
-
-                                    <motion.div
-                                        initial={{ opacity: 1, x: 0 }}
-                                        whileHover={{ scale: 1.05, x: 10 }}
-                                        transition={{ type: "spring", stiffness: 300 }}
-                                        className='flex justify-between'
-                                    >
-                                        <p onClick={logout}>Log Out</p>
-                                        <LogOut />
-                                    </motion.div>
-
-                                    <hr className='my-4 h-2 w-full ' />
-
-                                    <motion.div
-                                        initial={{ opacity: 1, x: 0 }}
-                                        whileHover={{ scale: 1.05, x: 10 }}
-                                        transition={{ type: "spring", stiffness: 300 }}
-                                        className='flex justify-between'
-                                    >
-                                        <p>Edit Profile</p>
-                                        <Edit />
-                                    </motion.div>
-
-                                    <hr className='my-4 h-2 w-full ' />
-
-                                    <motion.div
-                                        initial={{ opacity: 1, x: 0 }}
-                                        whileHover={{ scale: 1.05, x: 10 }}
-                                        transition={{ type: "spring", stiffness: 300 }}
-                                        className='flex justify-between'
-                                    >
-                                        <p>Order History</p>
-                                        <CreditCard />
-                                    </motion.div>
-
-                                    <hr className='my-4 h-2 w-full ' />
-
-                                    <motion.div
-                                        initial={{ opacity: 1, x: 0 }}
-                                        whileHover={{ scale: 1.05, x: 10 }}
-                                        transition={{ type: "spring", stiffness: 300 }}
-                                        className='flex justify-between'
-                                    >
-                                        <p>Wallet</p>
-                                        <Wallet />
-                                    </motion.div>
-
-                                </motion.div>
+                                <div className="cursor-pointer hover:bg-[#b4ade1] flex items-center justify-center p-2 rounded-md transition">
+                                    <Link to="instructor">Become an Instructor</Link>
+                                </div>
                             )
                         }
-                        {authUser.user.firstName[0].toUpperCase()} {authUser.user.lastName[0].toUpperCase()}</p>
-                    <div className='bg-[#9185de] w-2 h-2 rounded-full absolute top-0 right-[4px]'>
+
+
+
+                        <div className="cursor-pointer hover:bg-[#b4ade1] flex items-center justify-center p-2 rounded-md transition">
+                            <p>All Courses</p>
+                        </div>
+
+                        <div className="cursor-pointer hover:bg-[#b4ade1] flex items-center justify-center p-2 rounded-md transition">
+                            <Heart className='hover:text-[#2e2472]' />
+                        </div>
+
+                        <div className="cursor-pointer hover:bg-[#b4ade1] flex items-center justify-center p-2 rounded-md transition">
+                            <Bell className='hover:text-[#2e2472]' />
+                        </div>
+
+                        <div className=" cursor-pointer hover:bg-[#b4ade1] flex items-center justify-center p-2 rounded-md transition">
+                            <ShoppingCart className=" hover:text-[#2e2472]" />
+                        </div>
+
+                        <div className='cursor-pointer relative bg-black flex items-center justify-center p-2 rounded-full transition'
+                            onMouseEnter={handleProfileOpen}
+                            onMouseLeave={handleProfileClose}
+                        >
+                            <p className='text-white'>
+                                {
+                                    profileDropDown && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: -20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: -20 }}
+                                            transition={{ duration: 0.6, ease: "easeInOut" }}
+                                            className='absolute top-16 right-9 px-5 py-8 text-black  w-80 rounded-md bg-[#ffffff] shadow-lg border-[1px] border-gray-300  z-20'>
+                                            <div className='flex gap-5 '>
+                                                <div className='cursor-pointer relative bg-black flex items-center justify-center p-4 rounded-full transition '>
+                                                    <p className='text-white'>{authUser.user.firstName[0].toUpperCase()} {authUser.user.lastName[0].toUpperCase()}</p>
+                                                    <div className='bg-[#9185de] w-2 h-2 rounded-full absolute top-0 right-[4px]'>
+                                                    </div>
+                                                </div>
+
+                                                <div className='mt-3'>
+                                                    <p className='text-[1.2rem]'>{authUser.user.firstName} {authUser.user.lastName}</p>
+                                                    <p className='text-[0.8rem]'>{truncateText(authUser?.user.email ?? '', 15)}</p>
+                                                </div>
+
+                                            </div>
+
+                                            <hr className='my-4 h-2 w-full ' />
+
+
+
+                                            <motion.div
+                                                initial={{ opacity: 1, x: 0 }}
+                                                whileHover={{ scale: 1.05, x: 10 }}
+                                                transition={{ type: "spring", stiffness: 300 }}
+                                                className='flex justify-between'
+                                            >
+                                                <p onClick={logout}>Log Out</p>
+                                                <LogOut />
+                                            </motion.div>
+
+                                            <hr className='my-4 h-2 w-full ' />
+
+                                            <motion.div
+                                                initial={{ opacity: 1, x: 0 }}
+                                                whileHover={{ scale: 1.05, x: 10 }}
+                                                transition={{ type: "spring", stiffness: 300 }}
+                                                className='flex justify-between'
+                                            >
+                                                <p>Edit Profile</p>
+                                                <Edit />
+                                            </motion.div>
+
+                                            <hr className='my-4 h-2 w-full ' />
+
+                                            <motion.div
+                                                initial={{ opacity: 1, x: 0 }}
+                                                whileHover={{ scale: 1.05, x: 10 }}
+                                                transition={{ type: "spring", stiffness: 300 }}
+                                                className='flex justify-between'
+                                            >
+                                                <p>Order History</p>
+                                                <CreditCard />
+                                            </motion.div>
+
+                                            <hr className='my-4 h-2 w-full ' />
+
+                                            <motion.div
+                                                initial={{ opacity: 1, x: 0 }}
+                                                whileHover={{ scale: 1.05, x: 10 }}
+                                                transition={{ type: "spring", stiffness: 300 }}
+                                                className='flex justify-between'
+                                            >
+                                                <p>Wallet</p>
+                                                <Wallet />
+                                            </motion.div>
+
+                                        </motion.div>
+                                    )
+                                }
+                                {authUser.user.firstName[0].toUpperCase()} {authUser.user.lastName[0].toUpperCase()}</p>
+                            <div className='bg-[#9185de] w-2 h-2 rounded-full absolute top-0 right-[4px]'>
+
+                            </div>
+                        </div>
+
+
 
                     </div>
-                </div>
+                ) : <div className='flex gap-5 '>
+                    <Link to="signin" className='hover:bg-[#d4d1e9] px-8 py-2 border-2 rounded-md text-[#9185de] bg-white border-[#9185de]  transform duration-300'>Login</Link>
+                    <Link to="signup" className='bg-[#9185de] px-8 py-2 border-2 border-[#9185de] hover:bg-[#7e6ee9] rounded-md transform duration-300'>Signup</Link>
 
-
-
-            </div>
-): <div className='flex gap-5 '>
-        <Link to="signin" className='hover:bg-[#d4d1e9] px-8 py-2 border-2 rounded-md text-[#9185de] bg-white border-[#9185de]  transform duration-300'>Login</Link>
-    <Link to="signup" className='bg-[#9185de] px-8 py-2 border-2 border-[#9185de] hover:bg-[#7e6ee9] rounded-md transform duration-300'>Signup</Link>
-
-    </div>}
+                </div>}
         </nav>
     )
 }
