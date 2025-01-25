@@ -26,7 +26,7 @@ authUser ={ authUser}
         <Route path="/" element={authUser ? <Home/> : <Navigate to="/signin"/>}/>
         <Route path="/signup" element={!authUser ? <SignUp/>: <Navigate to = "/"/>}/>
         <Route path="/signin" element={!authUser ? <SignIn/> : <Navigate to="/"/>}/>
-        <Route path="/instructor" element={<InstructorHome/>}/>
+        <Route path="/instructor" element={authUser ? <InstructorHome/> : <Navigate to="/signin"/>}/>
       </Routes>
 
       <Toaster position="top-right" reverseOrder={false}/>
