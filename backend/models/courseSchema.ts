@@ -77,7 +77,7 @@ const courseSchema = new Schema<CourseModel>({
         {
             tittle:{
                 type:String,
-                required:[true, 'Course video tittle is required'],
+                // required:[true, 'Course video tittle is required'],
             },
             videoFilePath:{
                 type:String,
@@ -90,7 +90,7 @@ const courseSchema = new Schema<CourseModel>({
             },
             duration:{
                 type:Number,
-                required:[true, 'Video duration is required'],
+                // required:[true, 'Video duration is required'],
                 min:[1, 'Video duration must be greater than 1 minute']
             }
         }
