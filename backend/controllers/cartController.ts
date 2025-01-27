@@ -1,5 +1,4 @@
 import Cart from "../models/courseCartSchema";
-import User from "../models/userSchema";
 import Course from "../models/courseSchema";
 import { Request, Response } from "express";
 import mongoose from "mongoose";
