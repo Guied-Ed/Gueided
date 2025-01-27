@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import SignUp from "./pages/SignUp";
 import SignIn from "./pages/SignIn";
 import InstructorHome from "./InstructorPages/InstructorHome";
+import Courses from "./pages/Courses";
 const App = () => {
 
 
@@ -27,6 +28,7 @@ authUser ={ authUser}
         <Route path="/signup" element={!authUser ? <SignUp/>: <Navigate to = "/"/>}/>
         <Route path="/signin" element={!authUser ? <SignIn/> : <Navigate to="/"/>}/>
         <Route path="/instructor" element={authUser ? <InstructorHome/> : <Navigate to="/signin"/>}/>
+        <Route path="/all-courses" element={<Courses/>}/>
       </Routes>
 
       <Toaster position="top-right" reverseOrder={false}/>

@@ -154,7 +154,7 @@ const Navbar = ({ authUser }: myComponentProp) => {
 
 
                         <div className="cursor-pointer hover:bg-[#b4ade1] flex items-center justify-center p-2 rounded-md transition">
-                            <p>All Courses</p>
+                            <Link to="all-courses">All Courses</Link>
                         </div>
 
                         <div className="cursor-pointer hover:bg-[#b4ade1] flex items-center justify-center p-2 rounded-md transition">
