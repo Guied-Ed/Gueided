@@ -19,6 +19,7 @@ interface multerFile {
     category: string;
     price: number;
     level: string;
+    videoDetails?: string; // Add this line
   }
 }
 
@@ -59,8 +60,10 @@ const uploadFilesAndCreateCourse = async (req: CustomRequest, res: Response):Pro
       'image'
     );
 
+    const videoDetails = JSON.parse(req.body.videoDetails || '[]');
+
     const videoData: Video[] = await Promise.all(
-      videos.map(async (v) => {
+      videos.map(async (v,index) => {
         const videoUpload = await uploadToCloudinary(
           v.buffer,
           'guided/videos',
@@ -68,10 +71,10 @@ const uploadFilesAndCreateCourse = async (req: CustomRequest, res: Response):Pro
         );
 
         return {
-          tittle: v.originalname, // Using the original file name as the title
-          videoFilePath: videoUpload.secure_url, // Cloudinary URL
-          duration: undefined, // Optional field, set as needed
-          description: undefined, // Optional field, set as needed
+          tittle: videoDetails[index]?.tittle || v.originalname,
+          videoFilePath: videoUpload.secure_url,
+          duration: videoDetails[index]?.duration,
+          description: videoDetails[index]?.description,
         };
       })
     );
