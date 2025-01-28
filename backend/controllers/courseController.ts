@@ -122,6 +122,23 @@ const getAllCourses = async(req:Request,res:Response) =>{
 }
 
 
+const getASingleCourse  = async(req:Request,res:Response) =>{
+
+  const {courseId} = req.params;
+
+  try {
+    const course = await Course.findById(courseId).populate("instructor","firstName lastName email");
+    if(!course){
+      res.status(404).json({message:"Course not found"})
+    }
+    res.status(200).json({success:true,data:course})
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({message:"Error Fetch Courses"})
+  }
+}
+
+
 const updateCourse = async (req: CustomRequest, res: Response):Promise<void>=>{
   const {courseId} = req.params;
   const {userId} = req.params;
@@ -220,4 +237,4 @@ const deleteCourse = async(req:Request,res:Response) =>{
 
 
 
-export { uploadFilesAndCreateCourse,getAllCourses,updateCourse,deleteCourse };
+export { uploadFilesAndCreateCourse,getAllCourses,updateCourse,deleteCourse,getASingleCourse };

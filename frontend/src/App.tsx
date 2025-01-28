@@ -9,6 +9,7 @@ import SignUp from "./pages/SignUp";
 import SignIn from "./pages/SignIn";
 import InstructorHome from "./InstructorPages/InstructorHome";
 import Courses from "./pages/Courses";
+import CourseDetail from "./pages/CourseDetail";
 const App = () => {
 
 
@@ -24,6 +25,7 @@ const App = () => {
 authUser ={ authUser}
 />
       <Routes >
+        <Route path="/course/:courseId" element={<CourseDetail/>}/>
         <Route path="/" element={authUser ? <Home/> : <Navigate to="/signin"/>}/>
         <Route path="/signup" element={!authUser ? <SignUp/>: <Navigate to = "/"/>}/>
         <Route path="/signin" element={!authUser ? <SignIn/> : <Navigate to="/"/>}/>
