@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useEffect } from 'react';
 import { useCourseStore } from '../../store/useCourseStore';
 import { Loader } from 'lucide-react';
+import { Link } from 'react-router-dom';
 const Courses = () => {
     const { getCourses, isFetchingData, courseContainer } = useCourseStore();
     useEffect(() => {
@@ -14,20 +15,23 @@ const Courses = () => {
         <div>
             <div className="p-6 bg-gray-100 min-h-screen">
                 <h1 className="text-3xl font-bold text-gray-800 mb-6">Courses</h1>
+
+              
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {courseContainer && courseContainer.map((course, index) => (
+                          <Link to={`/course/${course._id}`}>
                         <div
                             key={index}
                             className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300"
                         >
                             <img
                                 src={course.thumbnail}
-                                alt={course.title}
+                                alt={course.tittle}
                                 className="w-full h-40 object-cover"
                             />
                             <div className="p-4">
                                 <h2 className="text-xl font-semibold text-gray-800 mb-2">
-                                    {course.title}
+                                    {course.tittle}
                                 </h2>
                                 <p className="text-gray-600 mb-4">{course.description}</p>
                                 <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
@@ -63,8 +67,11 @@ const Courses = () => {
                                 </ul>
                             </div>
                         </div>
+                        </Link>
                     ))}
+                 
                 </div>
+           
             </div>
 
 

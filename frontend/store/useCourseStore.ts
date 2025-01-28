@@ -1,7 +1,9 @@
 import {create} from 'zustand';
 import {axiosInstance} from '../lib/axios'
+import axios from 'axios';
 
 interface Course {
+    _id:string
     category: string;
     createdAt: string;
     description: string;
@@ -16,7 +18,7 @@ interface Course {
     price: number;
     ratings: any[];
     thumbnail: string;
-    title: string;
+    tittle: string;
     updatedAt: string;
     videos: any[];
     __v: number;
@@ -24,12 +26,17 @@ interface Course {
 
 interface CourseState {
     isFetchingData:boolean
+    isFetchingSingleData:boolean 
     getCourses:()=> Promise<void>
     courseContainer:  Course[]
+    singleCourseContainer:Course | null
+    getCourse:(couseId:string | undefined) => Promise<void>
 }
 export const useCourseStore  = create<CourseState>((set)=>({
     courseContainer:[],
+    singleCourseContainer:null,
     isFetchingData:false,
+    isFetchingSingleData:false,
     getCourses:async () =>{
         set({isFetchingData:true})
         try{
@@ -41,6 +48,20 @@ export const useCourseStore  = create<CourseState>((set)=>({
             console.log(err);
             set({isFetchingData:false})
         }
+
+    },
+    getCourse:async(couseId:string | undefined) =>{
+        set({isFetchingSingleData:true})
+        try {
+            const response = await axiosInstance.get(`/course/get-single-course/${couseId}`);
+            console.log(response);
+            set({singleCourseContainer:response.data.data});
+            set({isFetchingSingleData:false});
+        } catch (error) {
+            console.log(error);
+            set({isFetchingSingleData:false});
+        }
+     
 
     }
 }))
