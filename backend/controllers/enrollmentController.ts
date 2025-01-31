@@ -25,7 +25,7 @@ interface Params {
 }
 
 const PAYSTACK_KEY = process.env.PAYSTACK_API_KEY
-export const enrollStudent = async (req: Request<Params, ResBody, EnrollReq>, res: Response) => {
+const enrollStudent = async (req: Request<Params, ResBody, EnrollReq>, res: Response) => {
     try {
 
         const { email, amount } = req.body;
@@ -54,7 +54,8 @@ export const enrollStudent = async (req: Request<Params, ResBody, EnrollReq>, re
         const data = {
             email,
             amount: amount * 100,
-            reference: `enroll_${newEnrollment._id}`
+            reference: `enroll_${newEnrollment._id}`,
+            callback_url: 'http://localhost:5000/api/enroll/payment-success'
         }
 
         const response = await axios.post(
@@ -73,15 +74,54 @@ export const enrollStudent = async (req: Request<Params, ResBody, EnrollReq>, re
         newEnrollment.paymentReference = response.data.data.reference;
         await newEnrollment.save();
 
-        res.json({authorization_url})
+        res.json({ authorization_url })
     } catch (err) {
         console.log(err);
-      res.status(500).json({error:err})
-      return 
+        res.status(500).json({ error: err })
+        return
     }
 
 
 }
 
 
-export default enrollStudent
+const verifyPayment = async (req: Request, res: Response) => {
+    const { reference, status } = req.query;
+    if (!reference && !status) {
+        res.status(404).json({ message: "reference or status not found " });
+        return
+    }
+
+    try {
+        const response = await axios.get(`https://api.paystack.co/transaction/verify/${reference}`, {
+            headers: {
+                Authorization: `Bearer ${PAYSTACK_KEY}`
+            }
+        })
+
+        const paymentData = response.data.data;
+
+        if (paymentData.status === 'success') {
+            const enrollment = await Enrollment.findOne({ paymentReference: reference });
+            if (enrollment) {
+                enrollment.status = "paid"
+                await enrollment.save();
+                res.status(200).json({ message: "Payment Successful, enrollment updated!" });
+                return;
+            } else {
+                res.status(404).json({ message: 'Enrollment not found for this reference' });
+                return;
+            }
+        } else {
+            res.status(400).json({ message: 'Payment failed or invalid status' });
+            return;
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: 'Error verifying payment' });
+        return
+    }
+}
+
+
+export { enrollStudent, verifyPayment }
