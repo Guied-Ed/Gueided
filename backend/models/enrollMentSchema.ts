@@ -19,7 +19,7 @@ const enrollMentSchema = new Schema<IEnrollment>({
     },
     status:{
         type:String,
-        enum:["pending | paid"],
+        enum:["pending" , "paid"],
         default:"pending",
    
 
