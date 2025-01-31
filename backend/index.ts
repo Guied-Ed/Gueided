@@ -8,12 +8,13 @@ import cookieParser from 'cookie-parser'
 import courseRouter from './routes/courseRouter';
 import cors from 'cors'
 import cartRouter from './routes/cartRouter'
-
+import enrollRouter from './routes/enrollRouter';
 
 
 app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
+app.use('/api/enroll',enrollRouter);
 app.use('/api',cartRouter);
 app.use('/api',userRouter);
 app.use('/api/course',courseRouter);
