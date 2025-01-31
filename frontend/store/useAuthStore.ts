@@ -28,6 +28,8 @@ export const useAuthStore = create<AuthState>((set) => ({
         } catch (error) {
             console.log(error);
             set({ authUser: null })
+        }finally{
+            set({isCheckingAuth:false})
         }
     },
     signUp: async (formData: object) => {
