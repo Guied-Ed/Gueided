@@ -4,6 +4,7 @@ import { Request, Response } from "express"
 import Enrollment from "../models/enrollMentSchema"
 import axios from 'axios';
 import dotenv from 'dotenv'
+import User from "../models/userSchema";
 dotenv.config();
 
 interface EnrollReq {
@@ -74,6 +75,11 @@ const enrollStudent = async (req: Request<Params, ResBody, EnrollReq>, res: Resp
         newEnrollment.paymentReference = response.data.data.reference;
         await newEnrollment.save();
 
+
+        await User.findByIdAndUpdate(userId,{
+            $addToSet:{enrolledCourses:courseId}
+        })
+
         res.json({ authorization_url })
     } catch (err) {
         console.log(err);
@@ -106,6 +112,10 @@ const verifyPayment = async (req: Request, res: Response) => {
             if (enrollment) {
                 enrollment.status = "paid"
                 await enrollment.save();
+
+                await User.findByIdAndUpdate(enrollment.userId,{
+                    $addToSet:{enrolledCourses:enrollment.courseId}
+                })
                 res.status(200).json({ message: "Payment Successful, enrollment updated!" });
                 return;
             } else {
