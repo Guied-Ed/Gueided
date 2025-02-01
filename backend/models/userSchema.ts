@@ -15,6 +15,8 @@ interface Course {
     progress:number
 }
 
+
+
 interface UserModel extends Document{
     _id: mongoose.Types.ObjectId,
     firstName:string,
@@ -30,6 +32,7 @@ interface UserModel extends Document{
     resetPasswordExpiresDate:Date | undefined,
     verificationToken:string | undefined,
     verificationTokenExpiresDate:string | undefined,
+    enrolledCourses: mongoose.Types.ObjectId[],
 }
 
 
@@ -96,6 +99,13 @@ const userSchema = new Schema<UserModel>({
         }
 
     }
+    ],
+
+    enrolledCourses:[
+        {
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Course"
+        }
     ],
     resetPasswordToken:String,
     resetPasswordExpiresDate:Date,
