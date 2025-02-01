@@ -79,6 +79,8 @@ const uploadFilesAndCreateCourse = async (req: CustomRequest, res: Response):Pro
       })
     );
 
+
+
     const newCourse = new Course({
       tittle,
       description,
@@ -109,7 +111,7 @@ const uploadFilesAndCreateCourse = async (req: CustomRequest, res: Response):Pro
 
 const getAllCourses = async(req:Request,res:Response) =>{
   try{
-    const courses = await Course.find().populate("instructor","firstName lastName email");
+    const courses = await Course.find().populate("instructor","firstName lastName email").select("-videos");
     if(!courses){
       res.status(500).json({message:"Courses not found"})
       return 
@@ -127,7 +129,7 @@ const getASingleCourse  = async(req:Request,res:Response) =>{
   const {courseId} = req.params;
 
   try {
-    const course = await Course.findById(courseId).populate("instructor","firstName lastName email");
+    const course = await Course.findById(courseId).populate("instructor","firstName lastName email").select("-videos");
     if(!course){
       res.status(404).json({message:"Course not found"})
     }

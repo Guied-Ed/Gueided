@@ -76,8 +76,8 @@ const enrollStudent = async (req: Request<Params, ResBody, EnrollReq>, res: Resp
         await newEnrollment.save();
 
 
-        await User.findByIdAndUpdate(userId,{
-            $addToSet:{enrolledCourses:courseId}
+        await User.findByIdAndUpdate(userId, {
+            $addToSet: { enrolledCourses: courseId }
         })
 
         res.json({ authorization_url })
@@ -113,8 +113,8 @@ const verifyPayment = async (req: Request, res: Response) => {
                 enrollment.status = "paid"
                 await enrollment.save();
 
-                await User.findByIdAndUpdate(enrollment.userId,{
-                    $addToSet:{enrolledCourses:enrollment.courseId}
+                await User.findByIdAndUpdate(enrollment.userId, {
+                    $addToSet: { enrolledCourses: enrollment.courseId }
                 })
                 res.status(200).json({ message: "Payment Successful, enrollment updated!" });
                 return;
@@ -132,6 +132,71 @@ const verifyPayment = async (req: Request, res: Response) => {
         return
     }
 }
+const getAllEnrolledCourses = async (req: Request<{ userId: string }>, res: Response) => {
+    try {
+        let { userId } = req.params;
+        userId = userId.trim(); // Trim to remove unwanted spaces or newlines
 
 
-export { enrollStudent, verifyPayment }
+        // Check if the user exists
+        const user = await User.findById(userId);
+        if (!user) {
+            res.status(404).json({ message: "User not found" });
+            return;
+        }
+
+        const paidEnrolledCourses = await Enrollment.find({ userId, status: "paid" });
+
+        if (!paidEnrolledCourses.length) {
+            res.status(200).json({ message: "No paid enrolled courses available", courses: [] });
+            return;
+        }
+
+        const enrolledCousesIds = paidEnrolledCourses.map(enrollment => enrollment.courseId);
+
+        // Fetch the enrolled courses
+        const courses = await Course.find({ _id: { $in: enrolledCousesIds } })
+            .populate("instructor", "firstName lastName") // Populate instructor details
+            .select("tittle description videos.tittle videos.videoFilePath");
+
+        res.status(200).json({ courses });
+
+    } catch (err) {
+        console.error("Error:", err);
+        res.status(500).json({ message: "Error retrieving enrolled courses" });
+    }
+};
+
+
+const getSingleEnrolledCourse = async (req: Request<{ userId: string, courseId: string }>, res: Response) => {
+
+    try {
+
+        const { userId, courseId } = req.params;
+        if (!userId || !courseId) {
+            res.status(404).json({ message: "user or course not found" })
+        }
+
+
+        const enrollment = await Enrollment.findOne({ userId, courseId, status: "paid" });
+        if (!enrollment) {
+            res.status(404).json({ message: "User has not enrolled in this course or payment is pending" });
+            return;
+        }
+
+        const course = await Course.findById(courseId).populate("instructor", "firstName lastName") // Populate instructor details
+            .select("tittle description videos.tittle videos.videoFilePath");
+        if (!course) {
+            res.status(404).json({ message: "Course not found" });
+            return
+        }
+
+        res.status(200).json({ course });
+
+    }catch(err){
+        console.error("Error:", err);
+        res.status(500).json({ message: "Error retrieving course details" });
+    }
+}
+
+export { enrollStudent, verifyPayment, getAllEnrolledCourses,getSingleEnrolledCourse }
