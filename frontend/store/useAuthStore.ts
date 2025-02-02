@@ -12,6 +12,7 @@ interface AuthState {
     signIn: (formData: object) => Promise<void>,
     signUp: (formData: object) => Promise<void>,
     logout:()=> Promise<void>,
+    result:boolean
 }
 
 
@@ -20,6 +21,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     isLoggingIn: false,
     isSigningUp: false,
     isCheckingAuth: true,
+    result:false,
     checkAuth: async () => {
         try {
             const response = await axiosInstance.get('/check-auth');
@@ -59,7 +61,7 @@ export const useAuthStore = create<AuthState>((set) => ({
             const response = await axiosInstance.post('/login', formData);
             set({ authUser: response.data })
             toast.success("Successfully logged in")
-
+            set({result:true});
 
         } catch (err) {
             set({ isLoggingIn: false })
@@ -68,6 +70,7 @@ export const useAuthStore = create<AuthState>((set) => ({
             } else {
                 toast.error("Something went wrong")
             }
+            set({result:false})
         } finally {
             set({ isLoggingIn: false })
         }

@@ -3,19 +3,24 @@ import Home from '../InstructorComponents/components/Home';
 import SideBar from '../InstructorComponents/SideBar'
 import { useState } from 'react';
 const CourseSetup = () => {
-    
-    const [selectedComponent,setSelectedComponent] = useState(<Home/>);
+
+  const [selectedComponent, setSelectedComponent] = useState(<Home />);
   return (
-    <div className='flex gap-10 '>
-        <SideBar 
-        selectedComponent={selectedComponent}
-        setSelectedComponent={setSelectedComponent}
+    <div className="flex">
+      {/* Sidebar with dynamic width */}
+      <div className="w-1/4 h-screen fixed  ">
+        <SideBar
+          selectedComponent={selectedComponent}
+          setSelectedComponent={setSelectedComponent}
         />
-        <div className='w-full'>
-            {selectedComponent}
-         
-        </div>
+      </div>
+
+      {/* Main content automatically adjusting to sidebar width */}
+      <div className="ml-[calc(25%)] w-[calc(75%)] p-4">
+        {selectedComponent}
+      </div>
     </div>
+
   )
 }
 
