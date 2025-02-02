@@ -44,7 +44,7 @@ const App = () => {
         <Route path="/signin" element={!authUser ? <SignIn /> : <Navigate to="/" />} />
         <Route path="/instructor" element={ <InstructorHome /> } />
         <Route path="/all-courses" element={<Courses />} />
-        <Route path="/course/set-up" element={<CourseSetup/>}/>
+        <Route path="/course/set-up" element={authUser && <CourseSetup/>}/>
       </Routes>
 
       <Toaster position="top-right" reverseOrder={false} />

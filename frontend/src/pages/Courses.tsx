@@ -46,10 +46,10 @@ const Courses = () => {
                                     Instructor: {course.instructor.firstName}{" "}
                                     {course.instructor.lastName}
                                 </p>
-                                <h4 className="text-lg font-medium text-gray-800 mb-2">
+                                {/* <h4 className="text-lg font-medium text-gray-800 mb-2">
                                     Videos:
-                                </h4>
-                                <ul className="list-disc pl-5 text-gray-600">
+                                </h4> */}
+                                {/* <ul className="list-disc pl-5 text-gray-600">
                                     {course.videos && course.videos.map((video, videoIndex) => (
                                         <li key={videoIndex}>
                                             {video.tittle} ({video.duration})
@@ -64,7 +64,7 @@ const Courses = () => {
                                         </li>
 
                                     ))}
-                                </ul>
+                                </ul> */}
                             </div>
                         </div>
                         </Link>

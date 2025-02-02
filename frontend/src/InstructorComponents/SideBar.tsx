@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
-import { Settings as SettingsIcon, Home as HomeIcon, Book, User, CheckCircle } from 'lucide-react'; // Renamed Settings to SettingsIcon
+import { Settings as SettingsIcon, Home as HomeIcon, Book, User, CheckCircle,createLucideIcon} from 'lucide-react'; // Renamed Settings to SettingsIcon
 import Home from './components/Home';
 import SettingsComponent from './components/Settings'; // Renamed Settings to SettingsComponent
 import Courses from './components/Courses';
 import Students from './components/Students';
-
+import CreateCourse from './components/CreateCourse';
 const sideBar = [
 
     { name: 'Home', icon: <HomeIcon />, component: <Home /> },
     { name: 'Settings', icon: <SettingsIcon />, component: <SettingsComponent /> },
     { name: 'Courses', icon: <Book />, component: <Courses /> },
-    { name: 'Student', icon: <User />, component: <Students /> },
+    { name: 'Students', icon: <User />, component: <Students /> },
+    {name:"Create Course",icon:<CheckCircle/>, component:<CreateCourse/> }
 
 ];
 
@@ -29,7 +30,7 @@ const SideBar: React.FC<ComponentProps> = ({ selectedComponent, setSelectedCompo
         setSelectedComponent(component);
     }
     return (
-        <div className="bg-black h-screen w-80  mr-4 ">
+        <div className="bg-black h-screen  w-64  mr-4 ">
             <ul className='flex flex-col gap-6 py-8 px-6'>
                 {sideBar.map((sD, index) => {
 

@@ -1,5 +1,5 @@
 
-import  React, { useState } from 'react'
+import React, { useState } from 'react'
 import { Eye, EyeOff, Loader, Lock, Mail, User } from 'lucide-react';
 import { useAuthStore } from '../../store/useAuthStore';
 import toast from 'react-hot-toast';
@@ -8,27 +8,27 @@ import { useNavigate } from 'react-router-dom';
 
 
 interface ChangeEvent {
-    target:{
-        name:string
-        value:string
+    target: {
+        name: string
+        value: string
     }
 }
 
 interface showModal {
-    setShowModal:(value:boolean) => void;
+    setShowModal: (value: boolean) => void;
 }
-const InstructorSignIn:React.FC<showModal> = ({setShowModal}) => {
+const InstructorSignIn: React.FC<showModal> = ({ setShowModal }) => {
 
     const navigate = useNavigate();
-    const {  isLoggingIn,signIn,signUp} = useAuthStore();
+    const { result, isLoggingIn, signIn, signUp } = useAuthStore();
 
     const [showPassword, setShowPassword] = useState(false);
-    const [formData, setFormData] = useState({ email: "", password: "",})
-    const handleChange = (evt:ChangeEvent) =>{
-        const {name,value} = evt.target;
-        setFormData((prev)=>{
+    const [formData, setFormData] = useState({ email: "", password: "", })
+    const handleChange = (evt: ChangeEvent) => {
+        const { name, value } = evt.target;
+        setFormData((prev) => {
             return {
-                ...prev,[name]:value
+                ...prev, [name]: value
             }
         })
     }
@@ -46,35 +46,42 @@ const InstructorSignIn:React.FC<showModal> = ({setShowModal}) => {
     }
 
     const validateUser = () => {
- 
-        if(!formData.email) return toast.error("Email is required");
-        if(!formData.password) return toast.error("Password is required");
-        if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) return toast.error("Invalid email format")
-        if(formData.password.length < 5 ) return toast.error("Password must be at least 6 characters");
-     
+
+        if (!formData.email) return toast.error("Email is required");
+        if (!formData.password) return toast.error("Password is required");
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) return toast.error("Invalid email format")
+        if (formData.password.length < 5) return toast.error("Password must be at least 6 characters");
+
         return true;
-      }
+    }
 
     const handleSubmit = (e: SubmitEvent) => {
         e.preventDefault();
         const success = validateUser();
-        if(success === true){
+        if (success === true) {
             signIn(formData);
             setShowModal(false);
-            navigate("/course/set-up");
-
+            if(result === true){
+                navigate("/course/set-up");
+                setShowModal(false);
+            } else{
+                setShowModal(true);
+            }
         }
 
 
 
     }
+
+
+    console.log(result)
     return (
         <form className="space-y-6" onSubmit={handleSubmit} >
             {/* User Name Field */}
 
             <div className='flex gap-3'>
-               
-                
+
+
             </div>
             {/* Email Field */}
             <div className="form-control">
@@ -126,14 +133,14 @@ const InstructorSignIn:React.FC<showModal> = ({setShowModal}) => {
                     </button>
                 </div>
             </div>
-            
+
             {/* Submit Button */}
             <button
                 type="submit"
                 className={`bg-[#9185de] w-full py-3 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-primary ${isLoggingIn ? "flex items-center justify-center" : ""}`}
-                disabled={  isLoggingIn}
+                disabled={isLoggingIn}
             >
-                {  isLoggingIn ? (
+                {isLoggingIn ? (
                     <>
                         <Loader className="w-5 h-5 animate-spin" />
 
