@@ -9,7 +9,7 @@ interface multerFile {
   originalName: string
 }
 
- export interface CustomRequest extends Request {
+export interface CustomRequest extends Request {
   userId?: string;
   files?: { [fieldname: string]: Express.Multer.File[] } | undefined;
   body: {
@@ -30,19 +30,29 @@ type Video = {
   description?: string;
 };
 
-const uploadFilesAndCreateCourse = async (req: CustomRequest, res: Response):Promise<void> => {
+const uploadFilesAndCreateCourse = async (req: CustomRequest, res: Response): Promise<void> => {
 
-  const {userId} =  req.params
+  const { userId } = req.params
   const { thumbnail, videos } = req.files || {};
-  const { tittle, description, duration, category, price, level } = req.body;
+  const { tittle, description, category, level } = req.body;
+
+  // Convert duration and price to numbers
+  const duration = Number(req.body.duration);
+  const price = Number(req.body.price);
+
+  // Validate if conversion was successful
+  if (isNaN(duration) || isNaN(price)) {
+    res.status(400).json({ error: "Invalid duration or price" });
+    return
+  }
 
   if (!thumbnail || thumbnail.length === 0 || !videos || videos.length === 0) {
     res.status(400).json({ error: 'Thumbnail and videos are required' });
     return;
   }
 
-  if(!userId){
-    res.status(403).json({message:"User Not Found"});
+  if (!userId) {
+    res.status(403).json({ message: "User Not Found" });
     return;
   }
 
@@ -51,7 +61,7 @@ const uploadFilesAndCreateCourse = async (req: CustomRequest, res: Response):Pro
 
   console.log('Uploading Thumbnail:', { buffer: thumbnail[0].buffer, folder: 'guided/thumbnails', type: 'image' });
   console.log('Uploading Video:', { buffer: videos[0].buffer, folder: 'guided/videos', type: 'video' });
-  
+
 
   try {
     const thumbnailUpload = await uploadToCloudinary(
@@ -63,7 +73,7 @@ const uploadFilesAndCreateCourse = async (req: CustomRequest, res: Response):Pro
     const videoDetails = JSON.parse(req.body.videoDetails || '[]');
 
     const videoData: Video[] = await Promise.all(
-      videos.map(async (v,index) => {
+      videos.map(async (v, index) => {
         const videoUpload = await uploadToCloudinary(
           v.buffer,
           'guided/videos',
@@ -109,134 +119,148 @@ const uploadFilesAndCreateCourse = async (req: CustomRequest, res: Response):Pro
 
 
 
-const getAllCourses = async(req:Request,res:Response) =>{
-  try{
-    const courses = await Course.find().populate("instructor","firstName lastName email").select("-videos");
-    if(!courses){
-      res.status(500).json({message:"Courses not found"})
-      return 
+const getAllCourses = async (req: Request, res: Response) => {
+  try {
+    const courses = await Course.find().populate("instructor", "firstName lastName email").select("-videos");
+    if (!courses) {
+      res.status(500).json({ message: "Courses not found" })
+      return
     }
-    res.status(200).json({succcess:true,data:courses})
-  }catch(err){
+    res.status(200).json({ succcess: true, data: courses })
+  } catch (err) {
     console.log(err)
-    res.status(500).json({message:"Error Fetch Courses"})
+    res.status(500).json({ message: "Error Fetch Courses" })
   }
 }
 
 
-const getASingleCourse  = async(req:Request,res:Response) =>{
+const getASingleCourse = async (req: Request, res: Response) => {
 
-  const {courseId} = req.params;
+  const { courseId } = req.params;
 
   try {
-    const course = await Course.findById(courseId).populate("instructor","firstName lastName email").select("-videos");
-    if(!course){
-      res.status(404).json({message:"Course not found"})
+    const course = await Course.findById(courseId).populate("instructor", "firstName lastName email").select("-videos");
+    if (!course) {
+      res.status(404).json({ message: "Course not found" })
     }
-    res.status(200).json({success:true,data:course})
+    res.status(200).json({ success: true, data: course })
   } catch (error) {
     console.log(error)
-    res.status(500).json({message:"Error Fetch Courses"})
+    res.status(500).json({ message: "Error Fetch Courses" })
   }
 }
 
 
-const updateCourse = async (req: CustomRequest, res: Response):Promise<void>=>{
-  const {courseId} = req.params;
-  const {userId} = req.params;
+const updateCourse = async (req: CustomRequest, res: Response): Promise<void> => {
+  const { courseId } = req.params;
+  const { userId } = req.params;
   const { thumbnail, videos } = req.files || {};
   const { tittle, description, duration, category, price, level } = req.body;
-  try{
-      const course = await Course.findById(courseId);
-      if(!course){
-        res.status(401).json({message:"Course Not Found"})
-      }
+  try {
+    const course = await Course.findById(courseId);
+    if (!course) {
+      res.status(401).json({ message: "Course Not Found" })
+    }
 
-      // Check if the user is an instructor before updating a course 
+    // Check if the user is an instructor before updating a course 
 
-      if(course?.instructor.toString() !== userId){
-        res.status(401).json({message:"Only Course Instrutor can update his/her course"})
-        return;
-      }
+    if (course?.instructor.toString() !== userId) {
+      res.status(401).json({ message: "Only Course Instrutor can update his/her course" })
+      return;
+    }
 
-      if (course) {
-        if(tittle) course.tittle = tittle;
-        if(description) course.description = description;
-        if(duration) course.duration = duration;
-        if(category) course.category = category;
-        if(price) course.price = price;
-        if(level) course.level = level;
-      }
+    if (course) {
+      if (tittle) course.tittle = tittle;
+      if (description) course.description = description;
+      if (duration) course.duration = duration;
+      if (category) course.category = category;
+      if (price) course.price = price;
+      if (level) course.level = level;
+    }
 
 
-      if(thumbnail && thumbnail.length > 0) {
-        const thumbnailUpload = await uploadToCloudinary(
-          thumbnail[0].buffer,
-          'guided/thumbnails',
-          'image'
-        );
-        if(course)
+    if (thumbnail && thumbnail.length > 0) {
+      const thumbnailUpload = await uploadToCloudinary(
+        thumbnail[0].buffer,
+        'guided/thumbnails',
+        'image'
+      );
+      if (course)
         course.thumbnail = thumbnailUpload.secure_url
-      }
+    }
 
 
-      if(videos && videos.length > 0) {
+    if (videos && videos.length > 0) {
 
-        const videoData = await Promise.all(
-        videos.map(async(v)=>{
+      const videoData = await Promise.all(
+        videos.map(async (v) => {
           const videoUpload = await uploadToCloudinary(v.buffer, 'guided/videos',
             'video')
-            return {
-              tittle: v.originalname, // Using the original file name as the title
-              videoFilePath: videoUpload.secure_url, // Cloudinary URL
-              duration: undefined, // Optional field, set as needed
-              description: undefined,
-            }
+          return {
+            tittle: v.originalname, // Using the original file name as the title
+            videoFilePath: videoUpload.secure_url, // Cloudinary URL
+            duration: undefined, // Optional field, set as needed
+            description: undefined,
+          }
         })
       )
-        if(course){
-          course.videos = [...course.videos, ...videoData]
-        }
-         
+      if (course) {
+        course.videos = [...course.videos, ...videoData]
       }
 
-      await course?.save();
-      res.status(200).json({ message: 'Course updated successfully', course });
-  }catch(error){
+    }
+
+    await course?.save();
+    res.status(200).json({ message: 'Course updated successfully', course });
+  } catch (error) {
     console.error('Error updating course:', error);
     res.status(500).json({ message: 'Error updating course', error });
   }
 }
 
 
-const deleteCourse = async(req:Request,res:Response) =>{
-  const {userId,courseId } = req.params;
+const deleteCourse = async (req: Request, res: Response) => {
+  const { userId, courseId } = req.params;
 
   try {
     const course = await Course.findById(courseId);
-    if(!course){
-      res.status(401).json({message:"Course Not Found"})
+    if (!course) {
+      res.status(401).json({ message: "Course Not Found" })
     }
 
     // Check if the user is an instructor before updating a course 
 
-    if(course?.instructor.toString() !== userId){
-      res.status(401).json({message:"Only Course Instrutor can update his/her course"})
+    if (course?.instructor.toString() !== userId) {
+      res.status(401).json({ message: "Only Course Instrutor can update his/her course" })
       return;
     }
 
-  // Delete the course
-  await course.deleteOne();
+    // Delete the course
+    await course.deleteOne();
 
-  // Respond with success
-  res.status(200).json({ message: "Course deleted successfully",course });
+    // Respond with success
+    res.status(200).json({ message: "Course deleted successfully", course });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "An error occurred while trying to delete the course", error });
   }
-  
+
+}
+
+const getAllInstructorCourses = async (req:Request<{userId:string}>,res:Response) => {
+  try{
+    const {userId} = req.params;
+    const courses = await Course.find({instructor:userId});
+    if(!courses){
+      res.status(404).json({message:"No courses Found Yet"})
+    }
+    res.status(200).json({courses});
+  }catch(err){
+    console.log(err);
+    res.status(404).json({message:err})
+  }
 }
 
 
 
-export { uploadFilesAndCreateCourse,getAllCourses,updateCourse,deleteCourse,getASingleCourse };
+export { uploadFilesAndCreateCourse, getAllCourses, updateCourse, deleteCourse, getASingleCourse, getAllInstructorCourses };
