@@ -30,9 +30,15 @@ interface CourseState {
     isFetchingSingleData: boolean
     getCourses: () => Promise<void>
     courseContainer: Course[]
+    instructorCoursesContainer:Course[] | null 
     singleCourseContainer: Course | null
     getCourse: (couseId: string | undefined) => Promise<void>
     creatingCourse: boolean
+    createCourses:( formData:Course,userId:string ) => Promise<void>
+    isFetchingInstructorCourses:boolean
+    getInstructorCourses:(userId:string) => Promise <void>
+    isDeletingACourse:boolean
+    deleteACourse:(courseId:string | null, userId:string) => Promise<void>
 }
 export const useCourseStore = create<CourseState>((set) => ({
     courseContainer: [],
@@ -40,13 +46,20 @@ export const useCourseStore = create<CourseState>((set) => ({
     isFetchingData: false,
     isFetchingSingleData: false,
     creatingCourse: false,
-    createCourses: async (userId: string, formData: object) => {
+    instructorCoursesContainer:null,
+    isFetchingInstructorCourses:false,
+    isDeletingACourse:false,
+    createCourses: async ( formData: Course, userId: string) => {
         try {
-            const response = await axiosInstance.post(`/course'/upload-course/${userId}`, formData);
+            const response = await axiosInstance.post(`/course/upload-course/${userId}`, formData);
+            set((state) => ({
+                instructorCoursesContainer: state.instructorCoursesContainer ? [...state.instructorCoursesContainer, formData] : [formData]
+            }))
             set({creatingCourse:true});
             toast.success(response.data.message);
         } catch (err) {
             if (err instanceof Error) {
+                console.log(err)
                 toast.error((err as any).response.data.message);
             } else {
                 toast.error("Something went wrong")
@@ -67,6 +80,18 @@ export const useCourseStore = create<CourseState>((set) => ({
         }
 
     },
+
+    getInstructorCourses:async(userId:string)=>{
+        set({isFetchingInstructorCourses:true});
+        try {
+            const response = await axiosInstance.get(`/course/get-instructor-courses/${userId}`)
+            console.log(response.data);
+            set({instructorCoursesContainer:response.data.courses});
+            set({isFetchingInstructorCourses:false});
+        } catch (error) {
+            set({isFetchingInstructorCourses:false})
+        }
+    },
     getCourse: async (couseId: string | undefined) => {
         set({ isFetchingSingleData: true })
         try {
@@ -80,5 +105,25 @@ export const useCourseStore = create<CourseState>((set) => ({
         }
 
 
+    },
+
+    deleteACourse:async(courseId:string| null, userId:string) =>{
+        try {
+            const response = await axiosInstance.delete(`/course/delete-course/${courseId}/${userId}`);
+            set({isDeletingACourse:true});
+            set((state)=>({
+                instructorCoursesContainer:state.instructorCoursesContainer? state.instructorCoursesContainer?.filter(c=> c._id !== courseId):null
+            }))
+            toast.success(response.data.message);
+        } catch (err) {
+            if (err instanceof Error) {
+                console.log(err)
+                toast.error((err as any).response.data.message);
+            } else {
+                toast.error("Something went wrong")
+            }
+        
+        }
+       
     }
 }))

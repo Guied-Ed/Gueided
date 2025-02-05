@@ -61,7 +61,7 @@ const courseSchema = new Schema<CourseModel>({
     level:{
         type:String,
         required:[true, 'Course level is required'],
-        enum:['Begginer', 'Intermediate', 'Advanced']
+        enum:['Beginner', 'Intermediate', 'Advanced']
     },
     thumbnail:{
         type:String,
