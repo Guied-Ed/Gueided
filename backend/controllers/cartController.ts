@@ -3,34 +3,34 @@ import Course from "../models/courseSchema";
 import { Request, Response } from "express";
 import mongoose from "mongoose";
 
-const addToCart = async (req:Request,res:Response) =>{
-    const {userId,courseId} = req.params;
+const addToCart = async (req: Request, res: Response) => {
+    const { userId, courseId } = req.params;
     try {
         const course = await Course.findById(courseId);
-        if(!course){
-            res.status(404).json({message:"Course not found"});
+        if (!course) {
+            res.status(404).json({ message: "Course not found" });
             return;
         }
 
-        const cart = await Cart.findOne({userId});
-        if(cart){
+        const cart = await Cart.findOne({ userId });
+        if (cart) {
             const existingCourse = cart.courses.find(c => c.courseId.toString() === courseId);
-            if(existingCourse){
-                res.status(400).json({message:"Course already exists"});
+            if (existingCourse) {
+                res.status(400).json({ message: "Course already exists" });
                 return;
             }
             cart.courses.push({
-                courseId:course._id as mongoose.Types.ObjectId,
+                courseId: course._id as mongoose.Types.ObjectId,
                 tittle: course.tittle,
                 price: course.price,
                 thumbnail: course.thumbnail,
             })
 
             await cart.save();
-        }else{
+        } else {
             const newCart = new Cart({
                 userId,
-                courses:[
+                courses: [
                     {
                         courseId: course._id,
                         tittle: course.tittle,
@@ -42,7 +42,7 @@ const addToCart = async (req:Request,res:Response) =>{
             await newCart.save();
         }
 
-    res.status(200).json({ message: 'Course added to cart' });
+        res.status(200).json({ message: 'Course added to cart' });
     } catch (error) {
         res.status(500).json({ message: 'Error adding course to cart', error });
     }
@@ -68,5 +68,26 @@ const removeFromCart = async (req: Request, res: Response) => {
     }
 };
 
+const getCarts = async (req: Request, res: Response) => {
+    try {
+   
+        const { userId } = req.params
+        console.log("Received userId:", userId);  
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            res.status(400).json({ message: "Invalid user ID" });
+            return
+        }
 
-export {addToCart, removeFromCart};
+        const carts = await Cart.find({ userId: new mongoose.Types.ObjectId(userId) });
+        if (!carts) {
+            res.status(404).json({ message: "Carts not Found" })
+        }
+        res.status(200).json({ carts })
+    } catch (err) {
+        // console.log(err)
+        res.status(500).json({ message: "Error " + err })
+    }
+}
+
+
+export { addToCart, removeFromCart, getCarts };
