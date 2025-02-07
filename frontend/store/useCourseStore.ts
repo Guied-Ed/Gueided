@@ -42,10 +42,18 @@ interface CourseState {
     courseCarts: Course[]
     isFetchingCarts: boolean
     getCarts: (userId: string) => Promise<void>
+    addingToCart:boolean
+    addToCart:(courseId:string, userId:string) => Promise<void>
+}
+
+
+const getStoredCart = () =>{
+    const storedCart = localStorage.getItem ("cart");
+    return storedCart ? JSON.parse(storedCart) : [];
 }
 export const useCourseStore = create<CourseState>((set) => ({
-    courseCarts: [],
-    courseContainer: [],
+    courseCarts: getStoredCart(),
+    courseContainer:[],
     singleCourseContainer: null,
     isFetchingData: false,
     isFetchingSingleData: false,
@@ -54,6 +62,7 @@ export const useCourseStore = create<CourseState>((set) => ({
     isFetchingInstructorCourses: false,
     isDeletingACourse: false,
     isFetchingCarts: false,
+    addingToCart:false,
     createCourses: async (formData: Course, userId: string) => {
         try {
             const response = await axiosInstance.post(`/course/upload-course/${userId}`, formData);
@@ -75,9 +84,9 @@ export const useCourseStore = create<CourseState>((set) => ({
     getCourses: async () => {
         set({ isFetchingData: true })
         try {
-            const resonse = await axiosInstance.get('/course/get-courses');
-            console.log(resonse.data.data);
-            set({ courseContainer: resonse.data.data })
+            const response = await axiosInstance.get('/course/get-courses');
+            console.log(response.data.data);
+            set({ courseContainer: response.data.data })
             set({ isFetchingData: false })
         } catch (err) {
             console.log(err);
@@ -140,14 +149,40 @@ export const useCourseStore = create<CourseState>((set) => ({
             const response = await axiosInstance.get(`/carts/${userId}`);
             console.log(response)
             set({ courseCarts: response.data.carts });
+            set({isFetchingCarts:false})
         } catch (err) {
             if (err instanceof Error) {
                 console.log(err)
                 toast.error((err as any).response.data.message);
+                set({isFetchingCarts:false})
             } else {
                 toast.error("Something went wrong")
             }
 
+        }
+    },
+    addToCart: async (courseId:string,userId:string) =>{
+        set({addingToCart:true});
+        try{
+            const response = await axiosInstance.post(`/add-cart/${courseId}/${userId}`);
+            set((state)=>{
+                const updatedCart = [...state.courseCarts,response.data];
+                localStorage.setItem("cart",JSON.stringify(updatedCart))
+                return{
+                    courseCarts:updatedCart
+                }
+            })
+            set({addingToCart:false});
+            toast.success(response.data.message);
+        }catch(err){
+            set({addingToCart:false})
+            if(err instanceof Error){
+                console.log(err);
+                toast.error((err as any).response.data.message)
+            }else{
+                toast.error("Something went Wrong")
+            }
+          
         }
     }
 
