@@ -14,29 +14,72 @@ const Cart = () => {
     getCarts(userID);
   }, [])
 
-const cartLenghts = courseCarts.length;
 
-  
+  console.log(courseCarts)
+  const cartLenghts = courseCarts.length;
+
+
   if (isFetchingCarts) return (
     <div className='flex items-center justify-center h-screen '>
-      <Loader size={64} className='animate-spin'/>
+      <Loader size={64} className='animate-spin' />
     </div>)
   return (
-    <div className='flex flex-col justify-center items-center'>
-      <h1 className='text-3xl font-bold text-center mt-5 mb-9'>Shopping Carts </h1>
-      <hr className='w-3/4'/>
-      <div className='grid sm:grid-cols-2 grid-cols-1 gap-12 py-8'>
-        
-        <div>
-<p>{cartLenghts}</p>
-        </div>
+    <div className='flex flex-col'>
 
-        <div>
-        <h1>Hello Here</h1>
-        </div>
-      </div>
+      <h1 className='text-3xl font-bold text-center mt-5 mb-9'>Shopping Carts </h1>
+
+
+      {
+        courseCarts.length === 0 ? (
+          <div className='flex items-end justify-center mt-40'>
+            <p className='text-4xl font-bold'> No Course In Cart Yet </p>
+          </div>
+        ) :
+
+          <div className='flex justify-between items-center gap-12 py-8 px-8'>
+
+
+            {
+              courseCarts.map((cart) => (
+                <div className='w-full'>
+
+                  <div className=''>
+                    <hr className='w-full' />
+                  </div>
+                  {
+                    cart.courses?.map((course) => (
+
+                      <div className='flex items-center mt-4 gap-6 '>
+                        <img
+                          className='w-20'
+                          src={course.thumbnail}
+                        />
+                        <div className='flex flex-col gap-3'>
+                        <p className='text-[1.2rem] font-bold'>{course.tittle}</p>
+                        <p></p>
+                        </div>
+
+                      </div>))
+                  }
+                </div>
+              ))
+            }
+            <div>
+
+            </div>
+
+            <div className='w-full'>
+              <h1>Hello Here</h1>
+            </div>
+          </div>
+      }
     </div>
   )
 }
 
 export default Cart
+
+
+
+
+

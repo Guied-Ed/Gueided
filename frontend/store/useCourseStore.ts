@@ -24,6 +24,20 @@ interface Course {
     __v: number;
 }
 
+type cartCourses = {
+    courseId:string
+    tittle:string
+    thumbnail:string
+    price:number
+    _id:string
+
+}
+
+interface Carts {
+   userId:string
+   courses: cartCourses []
+}
+
 
 interface CourseState {
     isFetchingData: boolean
@@ -39,7 +53,7 @@ interface CourseState {
     getInstructorCourses: (userId: string) => Promise<void>
     isDeletingACourse: boolean
     deleteACourse: (courseId: string | null, userId: string) => Promise<void>
-    courseCarts: Course[]
+    courseCarts: Carts[]
     isFetchingCarts: boolean
     getCarts: (userId: string) => Promise<void>
     addingToCart:boolean
