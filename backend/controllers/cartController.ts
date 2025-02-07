@@ -13,19 +13,20 @@ const addToCart = async (req: Request, res: Response) => {
         }
 
         const cart = await Cart.findOne({ userId });
+
+        let addedCourse = {
+            courseId: course._id as mongoose.Types.ObjectId,
+            tittle: course.tittle,
+            price: course.price,
+            thumbnail: course.thumbnail,
+        }
         if (cart) {
             const existingCourse = cart.courses.find(c => c.courseId.toString() === courseId);
             if (existingCourse) {
-                res.status(400).json({ message: "Course already exists" });
+                res.status(400).json({ message: "Course already exists in the Cart " });
                 return;
             }
-            cart.courses.push({
-                courseId: course._id as mongoose.Types.ObjectId,
-                tittle: course.tittle,
-                price: course.price,
-                thumbnail: course.thumbnail,
-            })
-
+            cart.courses.push(addedCourse)
             await cart.save();
         } else {
             const newCart = new Cart({
@@ -40,9 +41,10 @@ const addToCart = async (req: Request, res: Response) => {
                 ]
             })
             await newCart.save();
+         
         }
 
-        res.status(200).json({ message: 'Course added to cart' });
+        res.status(200).json({addedCourse,message: 'Course added to cart' });
     } catch (error) {
         res.status(500).json({ message: 'Error adding course to cart', error });
     }
