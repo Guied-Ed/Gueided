@@ -185,7 +185,7 @@ const Navbar = ({ authUser }: myComponentProp) => {
                             </div>
 
                             <div className=" cursor-pointer hover:bg-[#b4ade1] flex items-center justify-center p-2 rounded-md transition">
-                                <ShoppingCart className=" hover:text-[#2e2472]" />
+                                <Link to="/cart"><ShoppingCart className=" hover:text-[#2e2472]" /></Link>
                             </div>
 
                             <div className='cursor-pointer relative bg-black flex items-center justify-center p-2 rounded-full transition'
