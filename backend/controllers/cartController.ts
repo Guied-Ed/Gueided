@@ -23,7 +23,7 @@ const addToCart = async (req: Request, res: Response) => {
         if (cart) {
             const existingCourse = cart.courses.find(c => c.courseId.toString() === courseId);
             if (existingCourse) {
-                res.status(400).json({ message: "Course already exists in the Cart " });
+                res.status(400).json({ message: "Course already exists in the Cart" });
                 return;
             }
             cart.courses.push(addedCourse)
