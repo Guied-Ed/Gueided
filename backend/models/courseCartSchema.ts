@@ -26,6 +26,8 @@ const cartSchema = new Schema<CartDocument>({
             tittle: String,
             price: Number,
             thumbnail: String,
+            duration:Number,
+            level:String
         }
     ]
 });

@@ -29,6 +29,8 @@ type cartCourses = {
     tittle:string
     thumbnail:string
     price:number
+    duration:number,
+    level:string
     _id:string
 
 }
@@ -43,6 +45,7 @@ interface CourseState {
     isFetchingData: boolean
     isFetchingSingleData: boolean
     getCourses: () => Promise<void>
+    getCoursesBySearch:(tittle:string)=> Promise<void>
     courseContainer: Course[]
     instructorCoursesContainer: Course[] | null
     singleCourseContainer: Course | null
@@ -58,6 +61,8 @@ interface CourseState {
     getCarts: (userId: string) => Promise<void>
     addingToCart:boolean
     addToCart:(courseId:string, userId:string) => Promise<void>
+    removeFromCart:(courseId:string, userId:string) => Promise<void>
+    isRemovingFromCart:boolean
 }
 
 
@@ -77,6 +82,7 @@ export const useCourseStore = create<CourseState>((set) => ({
     isDeletingACourse: false,
     isFetchingCarts: false,
     addingToCart:false,
+    isRemovingFromCart:false,
     createCourses: async (formData: Course, userId: string) => {
         try {
             const response = await axiosInstance.post(`/course/upload-course/${userId}`, formData);
@@ -109,6 +115,23 @@ export const useCourseStore = create<CourseState>((set) => ({
 
     },
 
+    getCoursesBySearch: async (tittle:string) => {
+        set({ isFetchingData: true })
+        try {
+            const response = await axiosInstance.get('/course/get-courses', {
+                params:{
+                    tittle
+                }
+            });
+            console.log(response.data.data);
+            set({ courseContainer: response.data.data })
+            set({ isFetchingData: false })
+        } catch (err) {
+            console.log(err);
+            set({ isFetchingData: false })
+        }
+
+    },
     getInstructorCourses: async (userId: string) => {
         set({ isFetchingInstructorCourses: true });
         try {
@@ -161,7 +184,7 @@ export const useCourseStore = create<CourseState>((set) => ({
         set({ isFetchingCarts: true });
         try {
             const response = await axiosInstance.get(`/carts/${userId}`);
-            console.log(response)
+          
             set({ courseCarts: response.data.carts });
             set({isFetchingCarts:false})
         } catch (err) {
@@ -197,6 +220,31 @@ export const useCourseStore = create<CourseState>((set) => ({
                 toast.error("Something went Wrong")
             }
           
+        }
+    },
+    removeFromCart:async (courseId:string, userId:string) =>{
+        set({isRemovingFromCart:true})
+        try {
+            const response = await axiosInstance.delete(`/remove-cart/${courseId}/${userId}`);
+            set((state)=> {
+                const updatedCart = state.courseCarts.map(cart => ({
+                    ...cart,
+                    courses: cart.courses.filter(course => course.courseId !== courseId)
+                }));
+                localStorage.setItem("cart", JSON.stringify(updatedCart));
+                return {
+                    courseCarts:updatedCart
+                }
+                
+                
+            })
+            toast.success(response.data.message)
+            set({isRemovingFromCart:false})
+        } catch (error) {
+            if(error instanceof Error){
+                toast.error((error as any).response.data.message)
+            }
+            set({isRemovingFromCart:false})
         }
     }
 
