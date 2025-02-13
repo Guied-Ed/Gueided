@@ -1,10 +1,11 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ShoppingCart } from 'lucide-react'
 import { Search, Bell, Heart, ChevronRight, LogOut, Edit, CreditCard, Wallet, Menu, X } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useAuthStore } from '../../store/useAuthStore'
 import { useLocation } from 'react-router-dom'
+import { useCourseStore } from '../../store/useCourseStore'
 const categories = {
     Engineering: ['Civil', 'Mechanical', 'Electrical', 'Computer'],
     'Vocational Skills': ['Carpentry', 'Plumbing', 'Tailoring', 'Cooking'],
@@ -21,6 +22,8 @@ type myComponentProp = {
 
 const Navbar = ({ authUser }: myComponentProp) => {
     const { logout } = useAuthStore();
+    const {getCoursesBySearch} = useCourseStore();
+    const {getCourses} = useCourseStore();
     console.log(authUser);
 
 
@@ -30,8 +33,26 @@ const Navbar = ({ authUser }: myComponentProp) => {
     const timeRefProfile = useRef<number | undefined>();
     const timeRef = useRef<number | undefined>();
     const [isOpen, setIsOpen] = useState(false);
+    const [searchValue,setSearchValue] = useState<string>("");
+    
+
+    useEffect(()=>{
+       const delayDebounceFn =  setTimeout(()=>{
+        if(searchValue){
+            getCoursesBySearch(searchValue);
+        }else{
+            getCourses();
+        }
+        },500)
+
+        return () => clearTimeout(delayDebounceFn);
+        
+    },[searchValue,getCoursesBySearch])
 
 
+    const handleKeyDown = (e:React.KeyboardEvent<HTMLInputElement>) =>{
+        if(e.key === "Enter") getCoursesBySearch(searchValue);
+    }
 
 
     const handelMouseEnter = () => {
@@ -78,18 +99,11 @@ const Navbar = ({ authUser }: myComponentProp) => {
                 <div className='flex items-center gap-12'>
 
                     <Menu className='flex sm:hidden ' size={32} onClick={() => setIsOpen(!isOpen)} />
-
-
-
                     <div>
-
                     </div>
-
                     <ul className='sm:flex hidden'>
                         <Link to="/">GuidEd</Link>
                     </ul>
-
-
                     <div className="cursor-pointer relative hidden hover:bg-[#b4ade1] sm:flex items-center justify-center p-2 rounded-md transition">
                         <p
                             onMouseEnter={handelMouseEnter}
@@ -146,7 +160,7 @@ const Navbar = ({ authUser }: myComponentProp) => {
                     </div>
 
                     <div className='relative'>
-                        <input type="text" className='px-8 py-2 border-2 border-black outline-none  rounded-full' placeholder='Search Here' />
+                        <input type="text" className='px-8 py-2 border-2 border-black outline-none  rounded-full' placeholder='Search Here' onChange={(e)=>setSearchValue(e.target.value)} onKeyDown={handleKeyDown}/>
                         <Search className='absolute top-0 transform translate-y-1/2 right-3' size={23} />
                     </div>
 

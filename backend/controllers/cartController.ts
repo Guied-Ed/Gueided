@@ -19,6 +19,8 @@ const addToCart = async (req: Request, res: Response) => {
             tittle: course.tittle,
             price: course.price,
             thumbnail: course.thumbnail,
+            duration:course.duration,
+            level:course.level
         }
         if (cart) {
             const existingCourse = cart.courses.find(c => c.courseId.toString() === courseId);
@@ -37,6 +39,8 @@ const addToCart = async (req: Request, res: Response) => {
                         tittle: course.tittle,
                         price: course.price,
                         thumbnail: course.thumbnail,
+                        duration:course.duration,
+                        level:course.level
                     }
                 ]
             })
@@ -54,16 +58,19 @@ const removeFromCart = async (req: Request, res: Response) => {
     const { courseId, userId } = req.params;
 
     try {
-        const result = await Cart.deleteOne({
-            userId,
-            "courses.courseId": courseId, // Match a specific course in the cart
-        });
+       
+        const result = await Cart.updateOne(
+            { userId }, 
+            { $pull: { courses: { courseId } } }
+        );
 
-        if (result.deletedCount === 0) {
-            res.status(404).json({ message: "Cart or course not found" });
-            return;
+        if (result.modifiedCount > 0) {
+          res.status(200).json({ success: true, message: 'Course removed from cart' });
+          return 
+        } else {
+            res.status(404).json({ success: false, message: 'Course not found in cart' });
+            return
         }
-        res.status(200).json({ message: "Cart and course removed successfully" });
     } catch (error) {
         console.error("Error removing course from cart:", error);
         res.status(500).json({ message: "Error removing course from cart", error });

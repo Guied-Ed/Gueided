@@ -120,15 +120,44 @@ const uploadFilesAndCreateCourse = async (req: CustomRequest, res: Response): Pr
 
 
 const getAllCourses = async (req: Request, res: Response) => {
+
+  // Build Query
+
+  // 1 Filtering 
+  const newQuery = {...req.query};
+  const exludedQueries = ["page","sort","limit","fields"];
+  exludedQueries.forEach(el=>  delete newQuery[el]);
+
+  //2 Advanced Filtering
+  let queryString = JSON.stringify(newQuery);
+  queryString = queryString.replace(/\b(gte|gt|lte|lt)\b/g,match => `$${match}`);
+  const filters = JSON.parse(queryString);
   try {
-    const courses = await Course.find().populate("instructor", "firstName lastName email").select("-videos");
+
+    // Execute Query //
+    let query =  Course.find(filters).populate("instructor", "firstName lastName email").select("-videos");
+
+    // Sorting
+    if(typeof req.query.sort=== "string"){
+      const sortBy = req.query.sort.split(",").join(" ");
+      query = query.sort(sortBy);
+    }
+
+    if(typeof req.query.fields === "string"){
+      const fields = req.query.fields.split("").join(" ");
+      query = query.select(fields);
+    }else{
+      query = query.select("-_v")
+    }
+    // 3 Field Limiting
+    const courses = await query;
     if (!courses) {
       res.status(500).json({ message: "Courses not found" })
       return
     }
     res.status(200).json({ succcess: true, data: courses })
   } catch (err) {
-    console.log(err)
+    // console.log(err)
     res.status(500).json({ message: "Error Fetch Courses" })
   }
 }
