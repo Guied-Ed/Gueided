@@ -4,7 +4,7 @@ import validator from 'validator'
 type Rating = {
     userId:mongoose.Types.ObjectId,
     rating:number,
-    comment?:string
+
 }
 
 type Video = {
@@ -110,10 +110,6 @@ const courseSchema = new Schema<CourseModel>({
                 required:[true, 'Rating is required'],
                 min:[1,'Rating must be greater than 1'],
                 max:[5,'Rating cannot be more than Five']
-            },
-            comment:{
-                type:String,
-                trim:true
             }
         }
     ]

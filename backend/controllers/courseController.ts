@@ -317,5 +317,34 @@ const getCategories = (req:Request,res:Response) =>{
   }
 }
 
+const addRating = async (req:Request,res:Response) =>{
+  const {courseId} = req.params;
+  const {userId,rating} = req.body;
+  try{
+    const course = await Course.findById(courseId);
+    const existingRating = course?.ratings.find(rating => rating.userId === userId);
+    if(existingRating){
+      res.status(404).json({message:"You have already Rate this Course"})
+      return
+    }
 
-export { uploadFilesAndCreateCourse, getAllCourses, updateCourse, deleteCourse, getASingleCourse, getAllInstructorCourses,getCategories };
+    const updateCourse = await Course.findByIdAndUpdate(courseId,{
+      $push:{
+        ratings:{
+          userId,rating
+        }
+      }
+    },{new:true})
+    if(!updateCourse){
+      res.status(404).json({message:"Course not found"});
+      return
+    }
+    res.status(200).json({message:"Course Rated Successfully"})
+
+  }catch(err){
+    res.status(500).json({message:err})
+  }
+}
+
+
+export { uploadFilesAndCreateCourse, getAllCourses, updateCourse, deleteCourse, getASingleCourse, getAllInstructorCourses,getCategories,addRating };
