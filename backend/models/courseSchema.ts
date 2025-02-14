@@ -20,6 +20,7 @@ interface CourseModel extends Document{
     instructor:mongoose.Types.ObjectId,
     duration:number,
     category:string,
+    subCategory:string
     price:number,
     level:string,
     thumbnail:string,
@@ -52,6 +53,9 @@ const courseSchema = new Schema<CourseModel>({
     category:{
         type:String,
         required:[true, 'Course category is required']
+    },
+    subCategory:{
+        type:String
     },
     price:{
         type:Number,

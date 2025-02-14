@@ -3,6 +3,7 @@
 import { Request, Response } from 'express';
 import { uploadToCloudinary } from '../middleware/multerMiddleWare';
 import Course from '../models/courseSchema';
+import { categories,CategoryType,SubCategoryType } from '../Constants/categoiers';
 
 interface multerFile {
   buffer: Buffer;
@@ -17,9 +18,10 @@ export interface CustomRequest extends Request {
     description: string;
     duration: number;
     category: string;
+    subCategory?: string;
     price: number;
     level: string;
-    videoDetails?: string; // Add this line
+    videoDetails?: string; 
   }
 }
 
@@ -34,7 +36,21 @@ const uploadFilesAndCreateCourse = async (req: CustomRequest, res: Response): Pr
 
   const { userId } = req.params
   const { thumbnail, videos } = req.files || {};
-  const { tittle, description, category, level } = req.body;
+  const { tittle, description, category, subCategory, level } = req.body;
+
+// Validate Categories //
+
+if(!(category in categories)){
+  res.status(404).json({message:"Invalid Category"})
+  return;
+}
+
+// Validate Sub Categories //
+if(subCategory && !(categories[category as CategoryType] as SubCategoryType[]).includes(subCategory as SubCategoryType)){
+  res.status(400).json({ error: 'Invalid subcategory for the selected category' });
+  return;
+}
+
 
   // Convert duration and price to numbers
   const duration = Number(req.body.duration);
@@ -96,6 +112,7 @@ const uploadFilesAndCreateCourse = async (req: CustomRequest, res: Response): Pr
       description,
       duration,
       category,
+      subCategory,
       price,
       level,
       instructor: userId,
@@ -291,5 +308,14 @@ const getAllInstructorCourses = async (req:Request<{userId:string}>,res:Response
 }
 
 
+const getCategories = (req:Request,res:Response) =>{
+  try {
+    res.status(200).json({categories});
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    res.status(500).json({ error: 'Failed to fetch categories' });
+  }
+}
 
-export { uploadFilesAndCreateCourse, getAllCourses, updateCourse, deleteCourse, getASingleCourse, getAllInstructorCourses };
+
+export { uploadFilesAndCreateCourse, getAllCourses, updateCourse, deleteCourse, getASingleCourse, getAllInstructorCourses,getCategories };
