@@ -4,7 +4,7 @@ import express, { Router } from "express";
 import { upload } from "../middleware/multerMiddleWare";  // Import the upload middleware
 import verifyToken from "../middleware/verifyToken";
 import isInstructor from "../middleware/roleMiddleWare";
-import { uploadFilesAndCreateCourse,getAllCourses,updateCourse,deleteCourse,getASingleCourse,getAllInstructorCourses,getCategories} from "../controllers/courseController";
+import { uploadFilesAndCreateCourse,getAllCourses,updateCourse,deleteCourse,getASingleCourse,getAllInstructorCourses,getCategories,addRating} from "../controllers/courseController";
 import { CustomRequest } from "../controllers/courseController";
 const router: Router = express.Router();
 
@@ -29,6 +29,7 @@ router.delete("/delete-course/:courseId/:userId",verifyToken,deleteCourse);
 router.get("/get-single-course/:courseId",getASingleCourse);
 router.get("/get-instructor-courses/:userId",verifyToken,isInstructor,getAllInstructorCourses)
 router.get('/categories', getCategories);
+router.post("/rate/:courseId",addRating);
 
 
 export default router;
