@@ -6,36 +6,15 @@ import { motion } from 'framer-motion'
 import { useAuthStore } from '../../store/useAuthStore'
 import { useLocation } from 'react-router-dom'
 import { useCourseStore } from '../../store/useCourseStore'
-const categories = {
-    'Project Writing': [
-        'Research Methodology',
-        'Data Collection Techniques',
-        'Data Analysis',
-        'Project Documentation',
-        'Citation and Referencing',
-    ],
-    'Seminar Presentation': [
-        'Presentation Skills',
-        'Slide Design',
-        'Public Speaking',
-        'Time Management',
-        'Handling Q&A Sessions',
-    ],
-    'Tech Courses After Graduation': [
-        'Web Development',
-        'Mobile App Development',
-        'Data Science',
-        'Artificial Intelligence',
-        'Cloud Computing',
-        'Cybersecurity',
-        'UI/UX Design',
-    ],
-    'Vocational Skills (Coming Soon)': [], // Marked as coming soon
-};
+import { useNavigate } from 'react-router-dom'
+
+
 
 type myComponentProp = {
     authUser: { user: { email: string, firstName: string, lastName: string } } | null
 }
+
+
 
 
 const Navbar = ({ authUser }: myComponentProp) => {
@@ -59,6 +38,15 @@ const Navbar = ({ authUser }: myComponentProp) => {
         getCategories();
     },[])
     
+    const navigate = useNavigate();
+
+    const handleCategoryClick = (category:string)=>{
+        navigate(`/all-courses?category=${encodeURIComponent(category)}`)
+    }
+
+    const handleSubCategoryClick = (subCategory:string)=>{
+        navigate(`/all-courses?subcategory=${encodeURIComponent(subCategory)}`)
+    }
 
     useEffect(()=>{
        const delayDebounceFn =  setTimeout(()=>{
@@ -150,6 +138,7 @@ const Navbar = ({ authUser }: myComponentProp) => {
                                                 key={category}
                                                 className="cursor-pointer flex justify-between hover:bg-[#b4ade1] transition-all duration-300 px-4 py-2"
                                                 onMouseEnter={() => handleCategory(category)}
+                                                onClick={()=> handleCategoryClick(category)}
                                             >
                                                 <p className="text-left">{category}</p>
                                                 <ChevronRight />
@@ -171,8 +160,11 @@ const Navbar = ({ authUser }: myComponentProp) => {
                                                     animate={{ opacity: 1, y: 0 }}
                                                     exit={{ opacity: 0, y: -20 }}
                                                     transition={{ duration: 0.6, ease: "easeInOut" }}
-                                                    key={sub} className="cursor-pointer">
-                                                    <Link to="" className='hover:bg-[#b4ade1] transition-all duration-300 px-4 py-2 whitespace-pre'>{sub}</Link>
+                                                    key={sub} className="cursor-pointer"
+                                                    onClick={()=> handleSubCategoryClick(sub)}
+                                                    >
+                                                        
+                                                    <p  className='hover:bg-[#b4ade1] transition-all duration-300 px-4 py-2 whitespace-pre'>{sub}</p>
                                                 </motion.li>
                                             ))}
                                         </motion.ul>

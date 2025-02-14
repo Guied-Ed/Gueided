@@ -12,8 +12,17 @@ const Courses = () => {
     const [selectedPrice, setSelectedPrice] = useState("");
 
     useEffect(() => {
-        getCourses();
-    }, []);
+        const queryParams = new URLSearchParams(location.search);
+        const category = queryParams.get("category");
+        const subCategory = queryParams.get("subcategory");
+
+        if(category || subCategory) {
+            getCoursesBySearch({category,subCategory})
+        }else{
+            getCourses();
+        }
+    
+    }, [location.search]);
 
     const handleAddToCart = async (courseId: string) => {
         setLoadingCourseId(courseId);
