@@ -350,5 +350,34 @@ const addRating = async (req:Request,res:Response) =>{
   }
 }
 
+const addComment = async (req:Request,res:Response)=>{
+  try {
+      const {courseId} = req.params;
+      const {userId,comment} = req.body;
+      
+      const course = await Course.findById(courseId);
+      const existingComment = course?.comments.find(comment => comment.userId === userId);
 
-export { uploadFilesAndCreateCourse, getAllCourses, updateCourse, deleteCourse, getASingleCourse, getAllInstructorCourses,getCategories,addRating };
+      if(existingComment) {
+        res.status(400).json({message:"You have added a comment already"})
+      }
+
+      const updateCourse = await Course.findByIdAndUpdate(courseId,{
+        $push:{
+          comments:{
+            userId, comment
+          }
+        }
+      })
+      
+      if(!updateCourse) {
+        res.status(404).json({message:"Course not Found"})
+        return
+      }
+      res.status(200).json({message:"Comment Added"})
+  } catch (err) {
+    res.status(500).json({message:err})
+  }
+}
+
+export { uploadFilesAndCreateCourse, getAllCourses, updateCourse, deleteCourse, getASingleCourse, getAllInstructorCourses,getCategories,addRating, addComment };

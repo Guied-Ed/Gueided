@@ -7,6 +7,11 @@ type Rating = {
 
 }
 
+
+type Comment ={
+    userId:mongoose.Types.ObjectId,
+    comment:string
+}
 type Video = {
     tittle:string,
     videoFilePath:string,
@@ -26,6 +31,7 @@ interface CourseModel extends Document{
     thumbnail:string,
     videos:Video[],
     ratings:Rating[],
+    comments:Comment[]
   
 }
 
@@ -110,6 +116,19 @@ const courseSchema = new Schema<CourseModel>({
                 required:[true, 'Rating is required'],
                 min:[1,'Rating must be greater than 1'],
                 max:[5,'Rating cannot be more than Five']
+            }
+        }
+    ],
+    comments:[
+        {
+            userId:{
+                type:mongoose.Schema.Types.ObjectId,
+                required:[true,'User id is required']
+            },
+            comment:{
+                type:String,
+                required:[true ,"Comments are Required"]
+                
             }
         }
     ]
