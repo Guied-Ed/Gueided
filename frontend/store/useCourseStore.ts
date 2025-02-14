@@ -2,6 +2,13 @@ import { create } from 'zustand';
 import { axiosInstance } from '../lib/axios'
 import axios from 'axios';
 import toast from 'react-hot-toast';
+
+interface CategoryType{
+    'Project Writing': string[];
+    'Seminar Presentation': string[];
+    'Tech Courses After Graduation': string[];
+    'Vocational Skills (Coming Soon)': string[];
+}
 interface Course {
     _id: string
     category: string;
@@ -42,10 +49,11 @@ interface Carts {
 
 
 interface CourseState {
+    getCategories:()=> Promise<void>
     isFetchingData: boolean
     isFetchingSingleData: boolean
     getCourses: () => Promise<void>
-    getCoursesBySearch:(tittle:string)=> Promise<void>
+    getCoursesBySearch: (params: { [key: string]: any }) => Promise<void>
     courseContainer: Course[]
     instructorCoursesContainer: Course[] | null
     singleCourseContainer: Course | null
@@ -53,6 +61,7 @@ interface CourseState {
     creatingCourse: boolean
     createCourses: (formData: Course, userId: string) => Promise<void>
     isFetchingInstructorCourses: boolean
+    categoriesContainer: CategoryType
     getInstructorCourses: (userId: string) => Promise<void>
     isDeletingACourse: boolean
     deleteACourse: (courseId: string | null, userId: string) => Promise<void>
@@ -63,6 +72,8 @@ interface CourseState {
     addToCart:(courseId:string, userId:string) => Promise<void>
     removeFromCart:(courseId:string, userId:string) => Promise<void>
     isRemovingFromCart:boolean
+
+    
 }
 
 
@@ -71,8 +82,15 @@ const getStoredCart = () =>{
     return storedCart ? JSON.parse(storedCart) : [];
 }
 export const useCourseStore = create<CourseState>((set) => ({
+    
     courseCarts: getStoredCart(),
     courseContainer:[],
+    categoriesContainer: {
+        'Project Writing': [],
+        'Seminar Presentation': [],
+        'Tech Courses After Graduation': [],
+        'Vocational Skills (Coming Soon)': []
+    },
     singleCourseContainer: null,
     isFetchingData: false,
     isFetchingSingleData: false,
@@ -115,13 +133,11 @@ export const useCourseStore = create<CourseState>((set) => ({
 
     },
 
-    getCoursesBySearch: async (tittle:string) => {
+    getCoursesBySearch: async (params:{}) => {
         set({ isFetchingData: true })
         try {
             const response = await axiosInstance.get('/course/get-courses', {
-                params:{
-                    tittle
-                }
+                params
             });
             console.log(response.data.data);
             set({ courseContainer: response.data.data })
@@ -176,6 +192,16 @@ export const useCourseStore = create<CourseState>((set) => ({
 
         }
 
+    },
+
+    getCategories:async()=>{
+        try{
+            const response = await axiosInstance.get("/course/categories")
+            set({ categoriesContainer: response.data.categories })
+            console.log(response);
+        }catch(err){
+
+        }
     },
 
     //Cart Functionality Here

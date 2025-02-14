@@ -7,13 +7,31 @@ import { useAuthStore } from '../../store/useAuthStore'
 import { useLocation } from 'react-router-dom'
 import { useCourseStore } from '../../store/useCourseStore'
 const categories = {
-    Engineering: ['Civil', 'Mechanical', 'Electrical', 'Computer'],
-    'Vocational Skills': ['Carpentry', 'Plumbing', 'Tailoring', 'Cooking'],
-    'Basic Medical': ['Nursing', 'Pharmacy', 'Lab Science'],
-    Agriculture: ['Crop Science', 'Animal Science', 'Agri-Tech'],
-    Education: ['Teaching', 'Educational Technology', 'Special Needs Education'],
+    'Project Writing': [
+        'Research Methodology',
+        'Data Collection Techniques',
+        'Data Analysis',
+        'Project Documentation',
+        'Citation and Referencing',
+    ],
+    'Seminar Presentation': [
+        'Presentation Skills',
+        'Slide Design',
+        'Public Speaking',
+        'Time Management',
+        'Handling Q&A Sessions',
+    ],
+    'Tech Courses After Graduation': [
+        'Web Development',
+        'Mobile App Development',
+        'Data Science',
+        'Artificial Intelligence',
+        'Cloud Computing',
+        'Cybersecurity',
+        'UI/UX Design',
+    ],
+    'Vocational Skills (Coming Soon)': [], // Marked as coming soon
 };
-
 
 type myComponentProp = {
     authUser: { user: { email: string, firstName: string, lastName: string } } | null
@@ -22,24 +40,30 @@ type myComponentProp = {
 
 const Navbar = ({ authUser }: myComponentProp) => {
     const { logout } = useAuthStore();
-    const {getCoursesBySearch} = useCourseStore();
+    const {getCoursesBySearch,getCategories,categoriesContainer} = useCourseStore();
     const {getCourses} = useCourseStore();
     console.log(authUser);
+    console.log(categoriesContainer);
 
 
     const [dropDown, setDropDown] = useState(false);
     const [profileDropDown, setProfileDropDown] = useState(false);
-    const [subCategory, setSetSubCategory] = useState<keyof typeof categories | null>(null);
+    const [subCategory, setSetSubCategory] = useState<keyof typeof categoriesContainer | null>(null);
     const timeRefProfile = useRef<number | undefined>();
     const timeRef = useRef<number | undefined>();
     const [isOpen, setIsOpen] = useState(false);
     const [searchValue,setSearchValue] = useState<string>("");
+   
+
+    useEffect(()=>{
+        getCategories();
+    },[])
     
 
     useEffect(()=>{
        const delayDebounceFn =  setTimeout(()=>{
         if(searchValue){
-            getCoursesBySearch(searchValue);
+            getCoursesBySearch({tittle: searchValue});
         }else{
             getCourses();
         }
@@ -51,7 +75,7 @@ const Navbar = ({ authUser }: myComponentProp) => {
 
 
     const handleKeyDown = (e:React.KeyboardEvent<HTMLInputElement>) =>{
-        if(e.key === "Enter") getCoursesBySearch(searchValue);
+        if(e.key === "Enter") getCoursesBySearch({tittle:searchValue});
     }
 
 
@@ -84,7 +108,7 @@ const Navbar = ({ authUser }: myComponentProp) => {
     }
 
     const handleCategory = (category: string) => {
-        setSetSubCategory(category as keyof typeof categories);
+        setSetSubCategory(category as keyof typeof categoriesContainer);
     }
 
 
@@ -121,7 +145,7 @@ const Navbar = ({ authUser }: myComponentProp) => {
                                 >
                                     <ul className="flex flex-col gap-4  w-48">
                                         <p className="border-b-2 border-b-black">Course Category</p>
-                                        {Object.keys(categories).map((category) => (
+                                        {Object.keys(categoriesContainer).map((category) => (
                                             <li
                                                 key={category}
                                                 className="cursor-pointer flex justify-between hover:bg-[#b4ade1] transition-all duration-300 px-4 py-2"
@@ -141,7 +165,7 @@ const Navbar = ({ authUser }: myComponentProp) => {
                                             transition={{ duration: 0.6, ease: "easeInOut" }}
                                             className="px-8 py-6 flex flex-col gap-4 items-center w-48 bg-[#ae99d8] rounded-md">
                                             <p className="border-b-2 border-b-black">{subCategory}</p>
-                                            {categories[subCategory].map((sub) => (
+                                            {categoriesContainer[subCategory].map((sub) => (
                                                 <motion.li
                                                     initial={{ opacity: 0, y: -20 }}
                                                     animate={{ opacity: 1, y: 0 }}
