@@ -189,7 +189,11 @@ const getASingleCourse = async (req: Request, res: Response) => {
     if (!course) {
       res.status(404).json({ message: "Course not found" })
     }
-    res.status(200).json({ success: true, data: course })
+
+    const totalRatings = course?.ratings.length;
+    const sumRatings = course?.ratings.reduce((sum,r)=> sum + r.rating, 0) || 0;
+    const avgRatings = totalRatings && totalRatings > 0 ? (sumRatings / totalRatings).toFixed(2) : 0;
+    res.status(200).json({ success: true, data:{...course?.toObject(), avgRatings}})
   } catch (error) {
     console.log(error)
     res.status(500).json({ message: "Error Fetch Courses" })
