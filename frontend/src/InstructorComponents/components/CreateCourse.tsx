@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useAuthStore } from '../../../store/useAuthStore';
 import toast from 'react-hot-toast';
 import { useCourseStore } from '../../../store/useCourseStore';
@@ -8,6 +8,7 @@ const CreateCourse = () => {
   const [step, setStep] = useState(1);
   const [tittle, setTittle] = useState("");
   const [category, setCategory] = useState("");
+  const [subCategory,setSubCategory] = useState("");
   const [description, setDescription] = useState("");
   const [duration, setDuration] = useState(0);
   const [level, setLevel] = useState("");
@@ -18,7 +19,7 @@ const CreateCourse = () => {
 
 
 const { authUser } = useAuthStore() as unknown as { authUser: { user: any } };
-const {creatingCourse,createCourses} = useCourseStore();
+const {creatingCourse,createCourses,getCategories,categoriesContainer} = useCourseStore();
 
 let userId = authUser?.user._id;
 
@@ -102,6 +103,11 @@ const validatDetails = () =>{
   const prevStep = () => {
     setStep((prev) => prev - 1);
   }
+  useEffect(()=>{
+    getCategories();
+  },[])
+
+  console.log(categoriesContainer)
 
   return (
     <div className='w-full '>
@@ -133,12 +139,30 @@ const validatDetails = () =>{
               className='border-2 w-full p-4'
             >
               <option value="">Select a Category</option>
-              <option value="web-development">Web Development</option>
-              <option value="mobile-development">Mobile Development</option>
-              <option value="data-science">Data Science</option>
-              <option value="design">Design</option>
-              <option value="marketing">Marketing</option>
+              {Object.keys(categoriesContainer).map((cat)=> (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+           
             </select>
+
+            {category && categoriesContainer[category].length > 0 && (
+                <div>
+                <label htmlFor="subCategory" className="block font-medium">Subcategory</label>
+                <select
+                  id="subCategory"
+                  value={subCategory}
+                  onChange={(e) => setSubCategory(e.target.value)}
+                  className="border-2 w-full p-3 rounded"
+                >
+                  <option value="">Select a Subcategory</option>
+                  {categoriesContainer[category].map((subCat) => (
+                    <option key={subCat} value={subCat}>
+                      {subCat}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </>
         )}
 

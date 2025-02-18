@@ -22,73 +22,88 @@ interface ResBody {
 
 interface Params {
     userId: string
-    courseId: string
+    courseIds: string[]
 }
 
 const PAYSTACK_KEY = process.env.PAYSTACK_API_KEY
-const enrollStudent = async (req: Request<Params, ResBody, EnrollReq>, res: Response) => {
+const enrollStudent = async (req: Request, res: Response) => {
     try {
-
         const { email, amount } = req.body;
-        const { userId, courseId } = req.params
+        const { userId, courseIds } = req.params;
 
-        if (!userId || !courseId) {
-            res.status(404).json({ message: "userId | courseId is required" });
-            return;
-        }
-        const course = await Course.findById(courseId);
-        if (!course) {
-            res.status(404).json({ message: "course is not found" });
-            return;
+        if (!userId || !courseIds) {
+           res.status(400).json({ message: "userId and courseIds are required" });
+           return 
         }
 
+        const courseIDArray = courseIds.split(",");
+        const enrollments = [];
+        const failedCourses = [];
+        const authorizationUrls = [];
 
-        const existingEnrollment = await Enrollment.findOne({ courseId, userId });
-        if (existingEnrollment) {
-            res.status(404).json({ message: "User Enrolled Already" });
-            return;
-        }
-
-        const newEnrollment = new Enrollment({ courseId, userId });
-        await newEnrollment.save();
-
-        const data = {
-            email,
-            amount: amount * 100,
-            reference: `enroll_${newEnrollment._id}`,
-            callback_url: 'http://localhost:5000/api/enroll/payment-success'
-        }
-
-        const response = await axios.post(
-            "https://api.paystack.co/transaction/initialize",
-            data,
-            {
-                headers: {
-                    Authorization: `Bearer ${PAYSTACK_KEY}`
-                }
+        for (const courseId of courseIDArray) {
+            const course = await Course.findById(courseId);
+            if (!course) {
+                failedCourses.push({ courseId, error: "Course not found" });
+                continue;
             }
 
-        )
+            const existingEnrollment = await Enrollment.findOne({ courseId, userId });
+            if (existingEnrollment) {
+                failedCourses.push({ courseId, error: "Already enrolled" });
+                continue;
+            }
 
-        const authorization_url = response.data.data.authorization_url;
+            // Create new enrollment
+            const newEnrollment = new Enrollment({ courseId, userId });
+            await newEnrollment.save();
+            enrollments.push(newEnrollment);
 
-        newEnrollment.paymentReference = response.data.data.reference;
-        await newEnrollment.save();
+            // Payment processing
+            const data = {
+                email,
+                amount: amount * 100,
+                reference: `enroll_${newEnrollment._id}`,
+                callback_url: 'http://localhost:5000/api/enroll/payment-success'
+            };
 
+            const response = await axios.post(
+                "https://api.paystack.co/transaction/initialize",
+                data,
+                {
+                    headers: {
+                        Authorization: `Bearer ${PAYSTACK_KEY}`
+                    }
+                }
+            );
 
-        await User.findByIdAndUpdate(userId, {
-            $addToSet: { enrolledCourses: courseId }
-        })
+            // Save payment reference
+            newEnrollment.paymentReference = response.data.data.reference;
+            await newEnrollment.save();
 
-        res.json({ authorization_url })
+            // Update user's enrolled courses
+            await User.findByIdAndUpdate(userId, {
+                $addToSet: { enrolledCourses: courseId }
+            });
+
+            // Collect authorization URL
+            authorizationUrls.push({
+                courseId,
+                authorization_url: response.data.data.authorization_url
+            });
+        }
+
+        res.json({
+            enrollments,
+            failedCourses,
+            authorizationUrls
+        });
+
     } catch (err) {
         console.log(err);
-        res.status(500).json({ error: err })
-        return
+        res.status(500).json({ err });
     }
-
-
-}
+};
 
 
 const verifyPayment = async (req: Request, res: Response) => {
@@ -193,10 +208,10 @@ const getSingleEnrolledCourse = async (req: Request<{ userId: string, courseId: 
 
         res.status(200).json({ course });
 
-    }catch(err){
+    } catch (err) {
         console.error("Error:", err);
         res.status(500).json({ message: "Error retrieving course details" });
     }
 }
 
-export { enrollStudent, verifyPayment, getAllEnrolledCourses,getSingleEnrolledCourse }
+export { enrollStudent, verifyPayment, getAllEnrolledCourses, getSingleEnrolledCourse }
