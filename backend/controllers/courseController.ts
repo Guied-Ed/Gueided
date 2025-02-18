@@ -86,6 +86,11 @@ if(subCategory && !(categories[category as CategoryType] as SubCategoryType[]).i
       'image'
     );
 
+    if (!thumbnailUpload?.secure_url) {
+      res.status(500).json({ error: "Thumbnail upload failed" });
+      return;
+    }
+
     const videoDetails = JSON.parse(req.body.videoDetails || '[]');
 
     const videoData: Video[] = await Promise.all(
@@ -136,6 +141,7 @@ if(subCategory && !(categories[category as CategoryType] as SubCategoryType[]).i
 
 
 
+
 const getAllCourses = async (req: Request, res: Response) => {
 
   // Build Query
@@ -179,26 +185,34 @@ const getAllCourses = async (req: Request, res: Response) => {
   }
 }
 
-
 const getASingleCourse = async (req: Request, res: Response) => {
-
   const { courseId } = req.params;
 
   try {
-    const course = await Course.findById(courseId).populate("instructor", "firstName lastName email").select("-videos");
+    const course = await Course.findById(courseId)
+      .populate("instructor", "firstName lastName email")
+      .select("-__v") // Exclude unnecessary fields
+      .lean(); // Convert Mongoose document to a plain object
+
     if (!course) {
-      res.status(404).json({ message: "Course not found" })
+    res.status(404).json({ message: "Course not found" });
+    return
     }
 
+    // Compute average ratings
     const totalRatings = course?.ratings.length;
-    const sumRatings = course?.ratings.reduce((sum,r)=> sum + r.rating, 0) || 0;
-    const avgRatings = totalRatings && totalRatings > 0 ? (sumRatings / totalRatings).toFixed(2) : 0;
-    res.status(200).json({ success: true, data:{...course?.toObject(), avgRatings}})
+    const sumRatings = course?.ratings.reduce((sum, r) => sum + r.rating, 0) || 0;
+    const avgRatings = totalRatings > 0 ? (sumRatings / totalRatings).toFixed(2) : 0;
+
+    // Limit videos to only 3
+    course.videos = course.videos.slice(0, 3);
+
+    res.status(200).json({ success: true, data: { ...course, avgRatings } });
   } catch (error) {
-    console.log(error)
-    res.status(500).json({ message: "Error Fetch Courses" })
+    console.error(error);
+    res.status(500).json({ message: "Error Fetching Course" });
   }
-}
+};
 
 
 const updateCourse = async (req: CustomRequest, res: Response): Promise<void> => {

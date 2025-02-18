@@ -3,12 +3,9 @@ import { axiosInstance } from '../lib/axios'
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-interface CategoryType{
-    'Project Writing': string[];
-    'Seminar Presentation': string[];
-    'Tech Courses After Graduation': string[];
-    'Vocational Skills (Coming Soon)': string[];
-}
+type CategoryType = {
+    [key: string]: any[]; // Adjust `any[]` to the correct type of your category data
+  };
 interface Course {
     _id: string
     category: string;
