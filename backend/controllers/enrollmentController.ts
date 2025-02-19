@@ -107,8 +107,8 @@ const enrollStudent = async (req: Request, res: Response) => {
 
 
 const verifyPayment = async (req: Request, res: Response) => {
-    const { reference, status } = req.query;
-    if (!reference && !status) {
+    const { reference } = req.query;
+    if (!reference) {
         res.status(404).json({ message: "reference or status not found " });
         return
     }
@@ -131,7 +131,7 @@ const verifyPayment = async (req: Request, res: Response) => {
                 await User.findByIdAndUpdate(enrollment.userId, {
                     $addToSet: { enrolledCourses: enrollment.courseId }
                 })
-                res.status(200).json({ message: "Payment Successful, enrollment updated!" });
+                res.redirect(`http://localhost:5173/payment-success?reference=${reference}`)
                 return;
             } else {
                 res.status(404).json({ message: 'Enrollment not found for this reference' });

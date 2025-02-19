@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useEnrollStore } from '../../store/useEnrollStore';
 import { useAuthStore } from "../../store/useAuthStore";
+import { useSearchParams } from "react-router-dom";
 const Payment = () => {
     const location = useLocation();
     const { cartSummary, totalPrice } = location.state || {}; // Safe fallback
     const { authUser } = useAuthStore() as unknown as { authUser: { user: any } };
     const userID = authUser?.user._id;
-    const { enrollUser } = useEnrollStore();
+    const { enrollUser,verifyPayment } = useEnrollStore();
 console.log(cartSummary)
     const [email, setEmail] = useState("");
 
@@ -28,6 +29,21 @@ console.log(cartSummary)
 
     };
 
+    const [searchParams] = useSearchParams();
+
+    useEffect(()=>{
+    const reference = searchParams.get('reference');
+      if (reference && verifyPayment) {
+            verifyPayment(reference).then((res: any) => {
+                if (res && res.message) {
+                    window.location.href = "/" // Show success message
+                } else {
+                    console.error("Invalid response from verifyPayment");
+                }
+            });
+        }
+    
+    },[searchParams, verifyPayment])
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-white text-white p-6">
             {/* Course Summary Section */}
