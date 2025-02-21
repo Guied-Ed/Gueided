@@ -216,6 +216,34 @@ const checkAuth = async (req: Request, res: Response):Promise<void> => {
     }
 }
 
+const editProfile  = async (req:Request,res:Response) => {
+    try {
+      const {userId} = req.params;
+      const {firstName,lastName,biography} = req.body;
+      if(req.body.email || req.body.password){
+        res.status(401).json({message:"Email or password cannot be updated here"});
+        return;
+      }
+
+      const user = await User.findById(userId);
+      if(!user){
+        res.status(404).json({message:"User Not Found"});
+        return;
+      }
+
+      user.firstName = firstName || user.firstName;
+      user.lastName = lastName || user.lastName;
+      user.biography = biography || user.biography;
+
+      const updatedUser = await user.save();
+
+      res.status(200).json(updatedUser);
+
+    } catch (error) {
+        res.status(500).json({message:error});
+    }
+}
 
 
-export { signup, verifyEmail, logout, login, forgotPassword, resetPassword, checkAuth };
+
+export { signup, verifyEmail, logout, login, forgotPassword, resetPassword, checkAuth,editProfile };

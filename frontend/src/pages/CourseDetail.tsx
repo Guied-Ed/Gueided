@@ -12,6 +12,7 @@ const CourseDetail = () => {
   }, [getCourse])
 
   console.log(singleCourseContainer)
+console.log(singleCourseContainer?.videos)
   return (
     <div>
 
