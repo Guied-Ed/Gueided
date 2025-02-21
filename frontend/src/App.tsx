@@ -18,7 +18,7 @@ import EditPage from "./pages/EditPage";
 const App = () => {
 
 
-  const { authUser, checkAuth ,  isCheckingAuth} = useAuthStore() as { authUser: { user: { email: string, firstName: string, lastName: string } } | null, checkAuth: () => void , isCheckingAuth:boolean};
+  const { authUser, checkAuth ,  isCheckingAuth} = useAuthStore() as { authUser: { user: { _id: string , email: string, firstName: string, lastName: string,biography:string } } | null, checkAuth: () => void , isCheckingAuth:boolean};
 
   useEffect(() => {
     checkAuth()
@@ -50,7 +50,9 @@ const App = () => {
         <Route path="/course/set-up" element={authUser && <CourseSetup />}/>
         <Route path="/cart" element={authUser && <Cart/>}/>
         <Route path="/payment" element={authUser && <Payment/>}/>
-        <Route path="/edit-profile" element={authUser && <EditPage/>}/>
+        <Route path="/edit-profile" element={authUser && <EditPage
+        authUser={authUser}
+        />}/>
       </Routes>
 
       <Toaster position="top-right" reverseOrder={false} />

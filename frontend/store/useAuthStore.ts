@@ -12,7 +12,10 @@ interface AuthState {
     signIn: (formData: object) => Promise<void>,
     signUp: (formData: object) => Promise<void>,
     logout:()=> Promise<void>,
-    result:boolean
+    result:boolean,
+    editingProfile:boolean
+    editProfile:(userId:string,formData:object ) => Promise<void>
+    userProfileData:null | string 
 }
 
 
@@ -22,6 +25,8 @@ export const useAuthStore = create<AuthState>((set) => ({
     isSigningUp: false,
     isCheckingAuth: true,
     result:false,
+    editingProfile:false,
+    userProfileData:null,
     checkAuth: async () => {
         try {
             const response = await axiosInstance.get('/check-auth');
@@ -89,6 +94,22 @@ export const useAuthStore = create<AuthState>((set) => ({
             }
         } finally {
             set({ isLoggingIn: false })
+        }
+    },
+    editProfile:async(userId:string, formData:object) => {
+        set({editingProfile:true})
+        try {
+            const response = await axiosInstance.put(`/edit-profile/${userId}`,formData );
+            set({editingProfile:false})
+            set({userProfileData:response.data});
+            toast.success(response.data.message);
+        } catch (error) {
+            set({editingProfile:false})
+            if(error instanceof Error){
+                toast.error(error.message);
+            }else{
+                toast.error("Unespected Error Occured")
+            }
         }
     }
 }))

@@ -237,7 +237,7 @@ const editProfile  = async (req:Request,res:Response) => {
 
       const updatedUser = await user.save();
 
-      res.status(200).json(updatedUser);
+      res.status(200).json({updatedUser, message:"User Profile updated successfully"});
 
     } catch (error) {
         res.status(500).json({message:error});
