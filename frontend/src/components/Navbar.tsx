@@ -260,17 +260,19 @@ const Navbar = ({ authUser }: myComponentProp) => {
                                                 </motion.div>
 
                                                 <hr className='my-4 h-2 w-full ' />
-
+                                                <Link to="/edit-profile">
                                                 <motion.div
                                                     initial={{ opacity: 1, x: 0 }}
                                                     whileHover={{ scale: 1.05, x: 10 }}
                                                     transition={{ type: "spring", stiffness: 300 }}
                                                     className='flex justify-between'
                                                 >
+                                                   
                                                     <p>Edit Profile</p>
                                                     <Edit />
+                                                  
                                                 </motion.div>
-
+                                                </Link>
                                                 <hr className='my-4 h-2 w-full ' />
 
                                                 <motion.div

@@ -14,6 +14,7 @@ import { Loader } from "lucide-react";
 import CourseSetup from "./InstructorPages/CourseSetup";
 import Cart from "./pages/Cart";
 import Payment from "./pages/Payment";
+import EditPage from "./pages/EditPage";
 const App = () => {
 
 
@@ -49,6 +50,7 @@ const App = () => {
         <Route path="/course/set-up" element={authUser && <CourseSetup />}/>
         <Route path="/cart" element={authUser && <Cart/>}/>
         <Route path="/payment" element={authUser && <Payment/>}/>
+        <Route path="/edit-profile" element={authUser && <EditPage/>}/>
       </Routes>
 
       <Toaster position="top-right" reverseOrder={false} />

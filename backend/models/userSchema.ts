@@ -24,6 +24,7 @@ interface UserModel extends Document{
     email:string,
     password:string,
     confirmPassword:string | undefined,
+    biography:string | undefined
     role?:userRole,
     lastLogin:Date,
     isVerified:boolean,
@@ -79,6 +80,10 @@ const userSchema = new Schema<UserModel>({
          message:()=> `Passwords do not match`
         }
     },
+    biography:{
+        type:String,
+        default:""
+    },
     role:{
         type:String,
         enum:Object.values(userRole),
@@ -128,7 +133,7 @@ userSchema.pre('save', async function (next) {
         }catch(error:unknown){
             return next(error as mongoose.CallbackError);
         }
-    this.courses = [];
+    // this.courses = [];
     }
 
     // Remove confirmPassword before saving the document
