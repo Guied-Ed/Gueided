@@ -33,12 +33,12 @@ const Courses = () => {
         <div className="p-8 bg-white min-h-screen text-gray-900">
             <h1 className="text-4xl font-bold text-gray-900 mb-6">Explore Courses</h1>
 
-            <div className="flex justify-center mb-10">
-                <div className="w-full sm:w-2/3 md:w-1/2 bg-white shadow-xl rounded-xl flex items-center justify-between px-6 py-4 border border-gray-200">
-                    <button className="text-lg font-semibold px-6 py-2 rounded-xl bg-gray-100 hover:bg-primary transition-all duration-300 text-gray-900" onClick={getCourses}>
+            <div className="flex justify-center  mb-10">
+                <div className="w-full sm:w-2/3 md:w-1/2 bg-white shadow-xl rounded-xl sm:flex flex-col gap-4 items-center sm:justify-between justify-center  px-6 py-4 border border-gray-200">
+                    <button className="text-lg font-semibold  sm:mb-0 mb-5 px-6 py-2 rounded-xl bg-gray-100 hover:bg-primary transition-all duration-300 text-gray-900" onClick={getCourses}>
                         All Courses
                     </button>
-                    <select className="text-lg font-semibold px-6 py-2 rounded-xl bg-gray-100 hover:bg-primary transition-all duration-300 text-gray-900" onChange={(e) => {
+                    <select className="text-lg font-semibold px-6 py-2 sm:mb-0 mb-5 rounded-xl bg-gray-100 hover:bg-primary transition-all duration-300 text-gray-900" onChange={(e) => {
                         const selectedValue = e.target.value;
                         setSelectedPrice(selectedValue);
                         getCoursesBySearch({ sort: selectedValue })
@@ -47,7 +47,7 @@ const Courses = () => {
                         <option value="-price">High to Low</option>
                         <option value="price">Low to High</option>
                     </select>
-                    <select className="text-lg font-semibold px-6 py-2 rounded-xl bg-gray-100 hover:bg-primary transition-all duration-300 text-gray-900">
+                    <select className="text-lg font-semibold px-6 py-2 sm:mb-0 mb-5 rounded-xl bg-gray-100 hover:bg-primary transition-all duration-300 text-gray-900">
                         <option value="">Sort by Rating</option>
                         <option value="Highest Rated">Highest Rated</option>
                         <option value="Lowest Rated">Lowest Rated</option>
@@ -62,7 +62,7 @@ const Courses = () => {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 mt-16">
                     {courseContainer.map((course, index) => (
-                        <div key={index} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                        <div key={index} className="bg-white rounded-xl  shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
                             <img src={course.thumbnail} alt={course.tittle} className="w-full h-44 object-cover" />
                             <div className="p-6">
                                 <Link to={`/course/${course._id}`}>
@@ -77,7 +77,7 @@ const Courses = () => {
                                         <span>Price: ${course.price}</span>
                                     </div>
                                     <p className="text-sm text-gray-500 mb-4">
-                                        Instructor: {course.instructor.firstName} {course.instructor.lastName}
+                                        Instructor: {course.instructor?.firstName} {course.instructor?.lastName}
                                     </p>
                                 </Link>
                                 <div className="w-full flex items-center justify-center">

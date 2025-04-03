@@ -11,7 +11,7 @@ enum userRole{
 
 interface Course {
     courseId:mongoose.Types.ObjectId,
-    enrolledDate:Date,
+    dateCreated?:Date,
     progress:number
 }
 
@@ -98,7 +98,7 @@ const userSchema = new Schema<UserModel>({
         courseId:{
             type:mongoose.Types.ObjectId
         },
-        enrolledDate:{
+        dateCreated:{
             type:Date, 
             default:Date.now()
         }
@@ -127,7 +127,7 @@ userSchema.pre('save', async function (next) {
 
             this.courses = courses.map(course=> ({
                 courseId:course._id as mongoose.Types.ObjectId,
-                enrolledDate: new Date(),
+                dateCreated: new Date(),
                 progress: 0,
             }))
         }catch(error:unknown){

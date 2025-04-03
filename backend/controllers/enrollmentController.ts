@@ -5,6 +5,7 @@ import Enrollment from "../models/enrollMentSchema"
 import axios from 'axios';
 import dotenv from 'dotenv'
 import User from "../models/userSchema";
+import Cart from "../models/courseCartSchema";
 dotenv.config();
 
 interface EnrollReq {
@@ -32,8 +33,8 @@ const enrollStudent = async (req: Request, res: Response) => {
         const { userId, courseIds } = req.params;
 
         if (!userId || !courseIds) {
-           res.status(400).json({ message: "userId and courseIds are required" });
-           return 
+            res.status(400).json({ message: "userId and courseIds are required" });
+            return
         }
 
         const courseIDArray = courseIds.split(",");
@@ -110,7 +111,7 @@ const verifyPayment = async (req: Request, res: Response) => {
     const { reference } = req.query;
     if (!reference) {
         res.status(404).json({ message: "reference or status not found " });
-        return
+        return;
     }
 
     try {
@@ -118,20 +119,29 @@ const verifyPayment = async (req: Request, res: Response) => {
             headers: {
                 Authorization: `Bearer ${PAYSTACK_KEY}`
             }
-        })
+        });
 
         const paymentData = response.data.data;
 
         if (paymentData.status === 'success') {
-            const enrollment = await Enrollment.findOne({ paymentReference: reference });
-            if (enrollment) {
-                enrollment.status = "paid"
-                await enrollment.save();
+            // Find all enrollments that match the given payment reference
+            const enrollments = await Enrollment.find({ paymentReference: reference });
+            if (enrollments && enrollments.length > 0) {
+                // Update each enrollment to "paid"
+                for (const enrollment of enrollments) {
+                    enrollment.status = "paid";
+                    await enrollment.save();
 
-                await User.findByIdAndUpdate(enrollment.userId, {
-                    $addToSet: { enrolledCourses: enrollment.courseId }
-                })
-                res.redirect(`http://localhost:5173/payment-success?reference=${reference}`)
+                    // Update user's enrolled courses for each enrollment (if not already added)
+                    await User.findByIdAndUpdate(enrollment.userId, {
+                        $addToSet: { enrolledCourses: enrollment.courseId }
+                    });
+                }
+              
+               await Cart.findByIdAndDelete(enrollments[0].userId, {courses:[]});
+ 
+
+                res.redirect(`http://localhost:5173/payment-success?reference=${reference}`);
                 return;
             } else {
                 res.status(404).json({ message: 'Enrollment not found for this reference' });
@@ -144,9 +154,10 @@ const verifyPayment = async (req: Request, res: Response) => {
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: 'Error verifying payment' });
-        return
+        return;
     }
-}
+};
+
 const getAllEnrolledCourses = async (req: Request<{ userId: string }>, res: Response) => {
     try {
         let { userId } = req.params;

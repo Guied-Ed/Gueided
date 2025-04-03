@@ -2,67 +2,82 @@ import React, { useEffect } from 'react'
 import { useCourseStore } from '../../../store/useCourseStore'
 import PieChart from '../DashboardVisuals/PieChart';
 import BarChat from '../DashboardVisuals/BarChat';
-const Home = () => {
 
+const Home = () => {
     const { courseContainer, getCourses } = useCourseStore();
+    
     useEffect(() => {
         getCourses()
     }, [])
-    console.log(courseContainer.length)
+    
+    const stats = [
+        { 
+            title: "Courses", 
+            value: courseContainer.length, 
+            bg: "bg-green-500", 
+            border: "border-green-500" 
+        },
+        { 
+            title: "Students", 
+            value: 26, 
+            bg: "bg-blue-800", 
+            border: "border-blue-800" 
+        },
+        { 
+            title: "Reviews", 
+            value: 1000, 
+            bg: "bg-purple-600", 
+            border: "border-purple-600" 
+        }
+    ];
 
-    let courseLength = courseContainer.length;
-    let totalStudents = 26;
-    let totalReviews = 1000;
     return (
-
-        <div>
-
-
-            <div className='mt-8 flex gap-4'>
-
-
-                <div className='bg-green-500 w-64 border-2 border-green-500 rounded-md h-40 px-8 py-8 flex flex-col items-center justify-center gap-4 text-white '>
-                    <p className='text-2xl'>Courses</p>
-                    <p className='text-2xl'>{courseContainer.length}</p>
-                </div>
-
-                <div className='bg-black border-2 border-black w-64 rounded-md h-40 px-8 py-8 flex flex-col items-center justify-center gap-4 text-white '>
-                    <p className='text-2xl'>Courses</p>
-                    <p className='text-2xl'>{courseContainer.length}</p>
-                </div>
-
-                {/* <div className='bg-white border-2 border-black w-64 rounded-md h-40 px-8 py-8 flex flex-col items-center justify-center gap-4 text-black '>
-                <p className='text-2xl'>Reviews</p>
-                <p className='text-2xl'>3000</p>
-            </div> */}
-
-                <div className='bg-blue-800 w-64 border-2 border-blue-800 rounded-md h-40 px-8 py-8 flex flex-col items-center justify-center gap-4 text-white '>
-                    <p className='text-2xl'>Students</p>
-                    <p className='text-2xl'>26</p>
-                </div>
-
+        <div className="p-4 md:p-6">
+            {/* Stats Cards */}
+            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8'>
+                {stats.map((stat, index) => (
+                    <div 
+                        key={index}
+                        className={`${stat.bg} ${stat.border} border-2 rounded-lg p-6 flex flex-col items-center justify-center gap-3 text-white transition-all hover:scale-[1.02]`}
+                    >
+                        <p className='text-xl md:text-2xl font-medium'>{stat.title}</p>
+                        <p className='text-3xl md:text-4xl font-bold'>{stat.value}</p>
+                    </div>
+                ))}
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 w-full px-12 mt-8">
-       
-
-                <div className="w-full flex justify-center h-96">
-                    <BarChat
-                        courseLength={courseLength}
-                        totalReviews={totalReviews}
-                        totalStudents={totalStudents}
-                    />
+            {/* Charts Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
+                    <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Course Analytics</h2>
+                    <div className="h-80 md:h-96">
+                        <BarChat
+                            courseLength={courseContainer.length}
+                            totalReviews={1000}
+                            totalStudents={26}
+                        />
+                    </div>
                 </div>
 
-                <div className="w-full flex justify-center">
-                    <PieChart
-                        courseLength={courseLength}
-                        totalReviews={totalReviews}
-                        totalStudents={totalStudents}
-                    />
+                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
+                    <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Distribution</h2>
+                    <div className="h-80 md:h-96">
+                        <PieChart
+                            courseLength={courseContainer.length}
+                            totalReviews={1000}
+                            totalStudents={26}
+                        />
+                    </div>
                 </div>
             </div>
 
+            {/* Additional Content Area */}
+            <div className="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Recent Activity</h2>
+                <p className="text-gray-600 dark:text-gray-300">
+                    Dashboard overview and quick statistics. Add your recent activities or notifications here.
+                </p>
+            </div>
         </div>
     )
 }

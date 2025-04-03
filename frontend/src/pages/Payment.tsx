@@ -36,7 +36,7 @@ console.log(cartSummary)
       if (reference && verifyPayment) {
             verifyPayment(reference).then((res: any) => {
                 if (res && res.message) {
-                    window.location.href = "/" // Show success message
+                    window.location.href = "/payment-success" // Show success message
                 } else {
                     console.error("Invalid response from verifyPayment");
                 }

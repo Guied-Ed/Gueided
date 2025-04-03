@@ -190,7 +190,7 @@ const getASingleCourse = async (req: Request, res: Response) => {
 
   try {
     const course = await Course.findById(courseId)
-      .populate("instructor", "firstName lastName email")
+      .populate("instructor", "firstName lastName email biography courses")
       .select("-__v") // Exclude unnecessary fields
       .lean(); // Convert Mongoose document to a plain object
 
@@ -321,7 +321,7 @@ const getAllInstructorCourses = async (req:Request<{userId:string}>,res:Response
     res.status(200).json({courses});
   }catch(err){
     console.log(err);
-    res.status(404).json({message:err})
+    res.status(404).json({message:err}) 
   }
 }
 

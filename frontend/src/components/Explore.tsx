@@ -49,8 +49,8 @@ const Explore = () => {
                     transition={{ duration: 0.8, delay: 0.3 }}
                     className='px-4 py-3 flex gap-2 w-full items-center justify-center '
                 >
-                    <motion.div className='bg-[#1e1e1e] flex gap-6 px-5 py-4 rounded-lg shadow-lg border border-gray-600 text-gray-300'>
-                        <p className='text-lg font-semibold'>All Categories</p>
+                    <motion.div className='bg-[#1e1e1e] flex hover:cursor-pointer gap-6 px-5 py-4 rounded-lg shadow-lg border border-gray-600 text-gray-300 hover:bg-white hover:text-black duration-300 transition'>
+                        <p className='text-lg font-semibold '>All Categories</p>
                         {isScrollingDown ? <ArrowUp className='text-gray-400' /> : <ArrowDown className='text-gray-400' />}
                     </motion.div>
                 </motion.div>

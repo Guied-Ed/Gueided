@@ -2,7 +2,6 @@ import { create } from 'zustand';
 import { axiosInstance } from '../lib/axios';
 import toast from 'react-hot-toast';
 
-
 interface AuthState {
     authUser: null | string
     isLoggingIn: boolean,
@@ -44,6 +43,7 @@ export const useAuthStore = create<AuthState>((set) => ({
         try {
             const response = await axiosInstance.post('/signup', formData)
             set({ authUser: response.data})
+            window.location.href="/verify-email";
             toast.success("Account created successfully");
 
         } catch (error) {
@@ -108,7 +108,7 @@ export const useAuthStore = create<AuthState>((set) => ({
             if(error instanceof Error){
                 toast.error(error.message);
             }else{
-                toast.error("Unespected Error Occured")
+                toast.error("Unexpected Error Occured")
             }
         }
     }

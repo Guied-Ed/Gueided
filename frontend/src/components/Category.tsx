@@ -20,7 +20,7 @@ const CourseCategories = () => {
         {courseCategories.map((category, index) => (
           <div
             key={index}
-            className="border-2 border-gray-300 p-6 w-full h-40 rounded-md shadow-lg hover:bg-gray-100 flex flex-col items-center justify-center gap-4"
+            className="border-2 border-gray-300 p-6 w-full h-40 rounded-md shadow-lg hover:bg-gray-100 transition hover:text-black duration-300 flex flex-col items-center justify-center gap-4"
           >
             {/* Icon and Text */}
             <div className="text-center flex flex-col items-center justify-center">

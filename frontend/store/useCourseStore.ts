@@ -6,6 +6,12 @@ import toast from 'react-hot-toast';
 type CategoryType = {
     [key: string]: any[]; // Adjust `any[]` to the correct type of your category data
   };
+
+  
+type CourseType = {
+    courseId:string
+    _id:string 
+  }
 interface Course {
     _id: string
     category: string;
@@ -17,6 +23,9 @@ interface Course {
         firstName: string;
         lastName: string;
         email: string;
+        biography:string;
+        courses:CourseType[];
+
     };
     level: string;
     price: number;
@@ -153,6 +162,7 @@ export const useCourseStore = create<CourseState>((set) => ({
             set({ instructorCoursesContainer: response.data.courses });
             set({ isFetchingInstructorCourses: false });
         } catch (error) {
+            console.log(error);
             set({ isFetchingInstructorCourses: false })
         }
     },

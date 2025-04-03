@@ -19,7 +19,7 @@ const Hero: React.FC = () => {
 
     return (
 
-        <div className="bg-gray-100  mt-12 w-full  h-96  grid grid-cols-2 ">
+        <div className="bg-white mt-12 w-full h-screen sm:h-96  grid grid-cols-1 sm:grid-cols-2 ">
 
              <motion.div 
              initial={{opacity:0, x:-20}}
@@ -45,7 +45,7 @@ const Hero: React.FC = () => {
              animate={{opacity:1, y:0}}
              exit={{opacity:0,y:30}}
              transition={{duration:0.8, delay:0.3}}
-            className=" px-6 py-6">
+            className=" px-6 sm:py-6 w-full sm:h-auto h-64">
                 <Swiper
                     modules={[Autoplay, Pagination]}
                     autoplay={{ delay: 3000 }}  // Set autoplay to 5 minutes (300,000 ms)

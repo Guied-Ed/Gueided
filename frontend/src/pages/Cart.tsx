@@ -63,22 +63,43 @@ console.log(courseCarts)
             <div className="space-y-6">
               {courseCarts.map((cart) =>
                 cart.courses?.map((course) => (
-                  <div key={course.courseId} className="flex items-center gap-6 p-4 border-b border-gray-700">
-                    <img className="w-24 h-24 rounded-lg object-cover" src={course.thumbnail} alt={course.tittle} />
-                    <div className="flex flex-col flex-grow">
-                      <p className="text-lg font-bold">{course.tittle}</p>
-                      <p className="text-sm text-gray-400">
-                        ⏳ {course.duration} Hrs | 📈 {course.level}
-                      </p>
-                      <p className="text-lg font-semibold text-green-400">#{course.price}</p>
-                    </div>
-                    <button
-                      className="p-3 bg-red-600 hover:bg-red-500 rounded-lg transition duration-200"
-                      onClick={() => removeFromCart(course.courseId, userID)}
-                    >
-                      {isRemovingFromCart ? <Loader size={16} className="animate-spin" /> : <Trash2 size={20} />}
-                    </button>
-                  </div>
+                  <div 
+  key={course.courseId} 
+  className="flex items-center gap-6 p-4 border-b border-gray-700"
+>
+  {/* Image */}
+  <img 
+    className="w-24 h-24 rounded-lg object-cover" 
+    src={course.thumbnail} 
+    alt={course.tittle} 
+  />
+
+  {/* Course Info */}
+  <div className="flex flex-col flex-1 justify-center">
+    <p className="text-lg font-bold">{course.tittle}</p>
+    <p className="text-sm text-gray-400">
+      ⏳ {course.duration} Hrs | 📈 {course.level}
+    </p>
+    <p className="text-lg font-semibold text-green-400">#{course.price}</p>
+
+
+    <button
+    className="sm:hidden p-3 bg-red-600 hover:bg-red-500 rounded-lg transition duration-200 flex items-center justify-center"
+    onClick={() => removeFromCart(course.courseId, userID)}
+  >
+    {isRemovingFromCart ? <Loader size={16} className="animate-spin" /> : <Trash2 size={20} />}
+  </button>
+  </div>
+  <button
+    className=" hidden p-3  bg-red-600 hover:bg-red-500 rounded-lg transition duration-200 sm:flex items-center justify-center"
+    onClick={() => removeFromCart(course.courseId, userID)}
+  >
+    {isRemovingFromCart ? <Loader size={16} className="animate-spin" /> : <Trash2 size={20} />}
+  </button>
+  {/* Remove Button */}
+
+</div>
+
                 ))
               )}
             </div>
