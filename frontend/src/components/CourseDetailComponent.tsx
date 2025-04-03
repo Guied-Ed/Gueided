@@ -2,6 +2,11 @@ import { video } from 'framer-motion/client';
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 
+type CourseType = {
+  courseId: string
+  _id: string
+}
+
 interface CourseDetailBannerProps {
   singleCourseContainer: {
     _id: string;
@@ -14,6 +19,9 @@ interface CourseDetailBannerProps {
       firstName: string;
       lastName: string;
       email: string;
+      biography: string;
+      courses: CourseType[];
+
     };
     level: string;
     price: number;
@@ -51,11 +59,12 @@ const CourseDetailBanner: React.FC<CourseDetailBannerProps> = ({ singleCourseCon
     setSelectedVideo(null);
   }
 
-  console.log(singleCourseContainer)
+  console.log(singleCourseContainer);
+  console.log(singleCourseContainer.instructor.courses.length);
   return (
     <>
 
-      <div className="bg-[#937ac6] w-full h-96 flex items-center justify-center relative">
+      <div className="bg-[#937ac6] w-full sm:h-96 h-screen flex items-center justify-center relative">
         <div className="w-10/12 flex flex-col md:flex-row items-center gap-8">
 
           {/* Course Thumbnail with  Background Color */}
@@ -93,13 +102,13 @@ const CourseDetailBanner: React.FC<CourseDetailBannerProps> = ({ singleCourseCon
           <table className="min-w-full border-collapse">
             <thead>
               <tr className="bg-gray-900 text-white">
-                <th className="py-3 px-6 text-left font-medium uppercase tracking-wider border border-gray-800">
+                <th className="py-3 px-2 sm:px-6 text-left font-medium uppercase tracking-wider border border-gray-800">
                   Tittle
                 </th>
-                <th className="py-3 px-6 text-left font-medium uppercase tracking-wider border border-gray-800">
+                <th className="py-3 px-2 sm:px-6 text-left font-medium uppercase tracking-wider border border-gray-800">
                   Duration
                 </th>
-                <th className="py-3 px-6 text-left font-medium uppercase tracking-wider border border-gray-800">
+                <th className="py-3 px-2 sm:px-6 text-left font-medium uppercase tracking-wider border border-gray-800">
                   Video
                 </th>
               </tr>
@@ -108,16 +117,16 @@ const CourseDetailBanner: React.FC<CourseDetailBannerProps> = ({ singleCourseCon
               {singleCourseContainer.videos.length > 0 &&
                 singleCourseContainer.videos.map((v) => (
                   <tr key={v._id} className="hover:bg-gray-100">
-                    <td className="py-4 px-6 border border-gray-200 text-gray-900">
+                    <td className="py-4 px-2 sm:px-6 border border-gray-200 text-gray-900">
                       {v.tittle}
                     </td>
-                    <td className="py-4 px-6 border border-gray-200 text-gray-900">
+                    <td className="py-4 px-2px-2 sm:px-6 border border-gray-200 text-gray-900">
                       {v.duration} sec
                     </td>
-                    <td className="py-4 px-6 border border-gray-200"
+                    <td className="py-4 px-2 sm:px-6 border border-gray-200"
 
                     >
-                      <button className="bg-[#937ac6] text-white px-6 py-2 rounded-lg shadow-md hover:bg-[#7a5cb3] transition" onClick={() => openModal(v)}>Try the Video Here</button>
+                      <button className="bg-[#937ac6] text-white text-sm sm:text-base sm:px-6 py-2 rounded-lg shadow-md hover:bg-[#7a5cb3] transition" onClick={() => openModal(v)}>Try the Video Here</button>
                       {/* <video controls className="w-48">
                         <source src={v.videoFilePath} type="video/mp4" />
                         Your browser does not support the video tag.
@@ -156,18 +165,35 @@ const CourseDetailBanner: React.FC<CourseDetailBannerProps> = ({ singleCourseCon
             </div>
           )}
         </div>
- 
-     
-      </div>
-      <div className='flex border-[1px] border-gray-900 mt-10 mx-4 items-center justify-center'>
-          <div>
-            <h1 className='font-bold text-3xl'>About the Instructor</h1>
-              <p>{singleCourseContainer?.instructor.firstName} </p>
-          </div>
-          <div>
 
+
+      </div>
+      <div className='flex border-[1px] border-gray-900 rounded-md mt-10 mx-4 p-8'>
+        <div>
+          <h1 className='font-bold text-3xl text-center'>About the Instructor</h1>
+          <p className='text-2xl my-4'> {singleCourseContainer?.instructor.firstName} </p>
+          <p>{singleCourseContainer?.instructor.biography}</p>
+
+          <div className='flex justify-center items-center gap-4 mt-4'>
+            <button className='bg-lime-600 rounded-full duration-300 transition-all flex items-center justify-center gap-2 text-white p-3 hover:bg-white border-2 border-lime-600 hover:text-black'>
+              <p>No of Courses</p>
+              <p>{singleCourseContainer.instructor.courses.length}</p>
+            </button>
+
+            <button className='bg-[#937ac6] rounded-full duration-300 transition-all flex items-center justify-center gap-2 text-white p-3 hover:bg-white border-2 border-[#937ac6] hover:text-black'>
+              <p>No of Students</p>
+              <p>20</p>
+            </button>
           </div>
         </div>
+        <div>
+
+        </div>
+      </div>
+
+      <div>
+      
+      </div>
     </>
   );
 };

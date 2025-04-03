@@ -6,7 +6,7 @@ const { MailtrapClient } = require("mailtrap");
 
 // Debug environment variables
 console.log("Loaded Environment Variables:", process.env);
-
+console.log("Loaded Environment Variables:", process.env);
 const TOKEN = process.env.MAILTRAP_TOKEN;
 const ENDPOINT = process.env.MAILTRAP_ENDPOINT;
 
@@ -28,7 +28,7 @@ const client = new MailtrapClient({
 
 // Define sender and recipients
 export const sender = {
-  email: "hello@demomailtrap.com",
+  email: "abdulbasitabdulwahab3@gmail.com",
   name: "ABDULBASIT",
 };
 export const recipients = [

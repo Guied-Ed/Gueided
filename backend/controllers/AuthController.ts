@@ -50,7 +50,7 @@ const signup = async (req: Request<{}, {}, SignUpRequestBody>, res: Response): P
         const hashPassword: string = await bcrypt.hash(password, 10);
 
         const verificationToken: string = Math.floor(100000 + Math.random() * 900000).toString();
-        const hashedToken: string = await bcrypt.hash(verificationToken, 8);
+        // const hashedToken: string = await bcrypt.hash(verificationToken, 8);
 
         const userRole = role && role === 'instructor'? 'instructor' : 'student'
         const user = new User({
@@ -60,7 +60,7 @@ const signup = async (req: Request<{}, {}, SignUpRequestBody>, res: Response): P
             password: hashPassword,
             role:userRole,
             // confirmPassword,
-            verificationToken: hashedToken,
+            verificationToken,
             verificationTokenExpiresDate: Date.now() + 24 * 60 * 60 * 1000
         });
 
@@ -73,7 +73,7 @@ const signup = async (req: Request<{}, {}, SignUpRequestBody>, res: Response): P
         return res.status(201).json({
             success: true, user: {
                 ...userObject,
-                password: undefined
+                password: undefined 
 
             }
         });

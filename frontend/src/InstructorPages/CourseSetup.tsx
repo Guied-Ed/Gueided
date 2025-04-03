@@ -16,7 +16,7 @@ const CourseSetup = () => {
       </div>
 
       {/* Main content automatically adjusting to sidebar width */}
-      <div className="ml-[calc(25%)] w-[calc(75%)] p-4">
+      <div className="ml-[calc(20%)] w-[calc(80%)] p-4">
         {selectedComponent}
       </div>
     </div>
