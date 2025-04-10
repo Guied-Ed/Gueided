@@ -26,12 +26,12 @@ const Courses = () => {
   }
 
   return (
-    <div className="p-4 md:p-6 bg-gray-100 dark:bg-gray-900 min-h-screen">
+    <div className="w-full w- p-4 md:p-6 bg-gray-100 dark:bg-gray-900 min-h-screen">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white">Your Courses</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">
+          <p className="text-gray-600 dark:text-gray-400 mt-2 text-sm sm:text-xl">
             Manage and organize your course offerings
           </p>
         </div>

@@ -1,45 +1,102 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import Guided from '../../src/assets/GuidEd.mp4';
+import { BookOpen, Rocket, Award, Users } from 'lucide-react';
 
 const Video = () => {
-    return (
-        <main className='w-full flex flex-col sm:flex-row justify-between gap-10 items-center p-4 sm:p-8 bg-white'>
-            {/* Video Section */}
-            <div className='w-full sm:w-1/2'>
-                <video
-                    autoPlay
-                    muted
-                    loop
-                    src={Guided}
-                    className='w-full rounded-t-3xl sm:rounded-l-full border-2 border-black shadow-lg'
-                >
-                    Your Browser does not support video
-                </video>
-            </div>
+    const features = [
+        {
+            icon: <Rocket className="w-6 h-6 text-blue-500" />,
+            text: "Prove Mastery Through Hands-On Learning",
+            description: "Engage in interactive lessons and real-world projects that solidify your understanding."
+        },
+        {
+            icon: <Award className="w-6 h-6 text-purple-500" />,
+            text: "Gain In-Demand Skills from Industry Experts",
+            description: "Learn directly from professionals with years of experience and practical insights."
+        },
+        {
+            icon: <Users className="w-6 h-6 text-blue-500" />,
+            text: "Collaborate with a Thriving Community",
+            description: "Join discussions and connect with like-minded learners and mentors."
+        },
+        {
+            icon: <BookOpen className="w-6 h-6 text-purple-500" />,
+            text: "Stay Ahead with Updated Content",
+            description: "Access the latest knowledge and evolving industry trends."
+        }
+    ];
 
-            {/* Text Section */}
-            <div className="flex flex-col gap-4 sm:gap-8 w-full sm:w-1/2">
-                <p className='text-2xl sm:text-3xl font-bold'>
-                    📚 Master New Skills with Guided!
-                </p>
-                <p className='text-xl sm:text-2xl font-bold'>
-                    🚀 Master Skills Hands-On
-                </p>
-                <p className='text-base sm:text-lg'>
-                    🚀 <strong>Prove Mastery Through Hands-On Learning</strong> – Engage in interactive lessons and real-world projects that solidify your understanding.
-                </p>
-                <p className='text-base sm:text-lg'>
-                    🎓 <strong>Gain In-Demand Skills from Industry Experts</strong> – Learn directly from professionals who bring years of experience and practical insights.
-                </p>
-                {/* Uncomment these if needed */}
-                {/* <p className='text-base sm:text-lg'>
-                    🤝 <strong>Collaborate and Grow with a Thriving Community</strong> – Join discussions, share ideas, and connect with like-minded learners and mentors.
-                </p>
-                <p className='text-base sm:text-lg'>
-                    📚 <strong>Stay Ahead with Constantly Updated Content</strong> – Access the latest knowledge and evolving industry trends to keep your skills sharp.
-                </p> */}
+    return (
+        <motion.section 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="w-full bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-12 px-4 sm:px-6 lg:px-8"
+        >
+            <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8 lg:gap-12 items-center">
+                {/* Video Section */}
+                <motion.div 
+                    initial={{ x: -20, opacity: 0 }}
+                    whileInView={{ x: 0, opacity: 1 }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                    viewport={{ once: true }}
+                    className="w-full lg:w-1/2 rounded-2xl overflow-hidden shadow-xl border-4 border-white dark:border-gray-700"
+                >
+                    <video
+                        autoPlay
+                        muted
+                        loop
+                        src={Guided}
+                        className="w-full h-auto object-cover"
+                    >
+                        Your browser does not support the video tag.
+                    </video>
+                </motion.div>
+
+                {/* Text Section */}
+                <motion.div 
+                    initial={{ x: 20, opacity: 0 }}
+                    whileInView={{ x: 0, opacity: 1 }}
+                    transition={{ duration: 0.6, delay: 0.4 }}
+                    viewport={{ once: true }}
+                    className="w-full lg:w-1/2 space-y-6"
+                >
+                    <h2 className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
+                        Master New Skills with Guided!
+                    </h2>
+                    <h3 className="text-2xl md:text-3xl font-semibold text-gray-800 dark:text-white">
+                        Master Skills Hands-On
+                    </h3>
+
+                    <div className="space-y-4">
+                        {features.map((feature, index) => (
+                            <motion.div
+                                key={index}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.1 * index, duration: 0.5 }}
+                                viewport={{ once: true }}
+                                className="flex items-start gap-4 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow"
+                            >
+                                <div className="mt-1 flex-shrink-0">
+                                    {feature.icon}
+                                </div>
+                                <div>
+                                    <h4 className="text-lg font-semibold text-gray-800 dark:text-white">
+                                        {feature.text}
+                                    </h4>
+                                    <p className="text-gray-600 dark:text-gray-400">
+                                        {feature.description}
+                                    </p>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                </motion.div>
             </div>
-        </main>
+        </motion.section>
     );
 };
 

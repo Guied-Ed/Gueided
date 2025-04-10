@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ArrowDown, ArrowUp } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { motion } from 'framer-motion';
 import CourseCategories from './Category';
 
@@ -28,36 +28,60 @@ const Explore = () => {
     }, []);
 
     return (
-        <div className='mt-12 bg-[#121212] text-white py-10'>
-            <div className='flex flex-col gap-4 z-30'>
-                <motion.div
-                    initial={{ opacity: 0, y: -60 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -60 }}
-                    transition={{ duration: 0.8, delay: 0.3 }}
-                >
-                    <p className='text-center text-4xl font-bold text-gray-200'>
-                        Explore Courses in Your Field of Interest
-                    </p>
-                </motion.div>
+        <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className='mt-12 bg-gradient-to-b from-gray-900 to-gray-800 py-16 px-4 sm:px-6 lg:px-8'
+        >
+            <div className='max-w-7xl mx-auto'>
+                <div className='flex flex-col items-center gap-8'>
+                    <motion.div
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.2 }}
+                        className='text-center'
+                    >
+                        <h2 className='text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400'>
+                            Explore Courses in Your Field
+                        </h2>
+                        <p className='mt-4 text-lg text-gray-300 max-w-2xl mx-auto'>
+                            Discover the perfect course to advance your skills and knowledge
+                        </p>
+                    </motion.div>
+
+                    <motion.div
+                        ref={checkpointRef}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.4 }}
+                        className='w-full max-w-md'
+                    >
+                        <motion.button
+                            whileHover={{ scale: 1.03 }}
+                            whileTap={{ scale: 0.97 }}
+                            className='w-full flex items-center justify-between gap-4 px-6 py-4 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-200 transition-all duration-300'
+                        >
+                            <span className='font-medium text-lg'>All Categories</span>
+                            {isScrollingDown ? (
+                                <ChevronUp className='text-blue-400' />
+                            ) : (
+                                <ChevronDown className='text-blue-400' />
+                            )}
+                        </motion.button>
+                    </motion.div>
+                </div>
 
                 <motion.div
-                    ref={checkpointRef}
-                    initial={{ opacity: 0, y: 40 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 40 }}
-                    transition={{ duration: 0.8, delay: 0.3 }}
-                    className='px-4 py-3 flex gap-2 w-full items-center justify-center '
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5, delay: 0.6 }}
+                    className='mt-12 text-white'
                 >
-                    <motion.div className='bg-[#1e1e1e] flex hover:cursor-pointer gap-6 px-5 py-4 rounded-lg shadow-lg border border-gray-600 text-gray-300 hover:bg-white hover:text-black duration-300 transition'>
-                        <p className='text-lg font-semibold '>All Categories</p>
-                        {isScrollingDown ? <ArrowUp className='text-gray-400' /> : <ArrowDown className='text-gray-400' />}
-                    </motion.div>
+                    <CourseCategories />
                 </motion.div>
             </div>
-
-            <CourseCategories />
-        </div>
+        </motion.div>
     );
 };
 

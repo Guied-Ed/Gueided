@@ -7,6 +7,7 @@ interface AuthState {
     isLoggingIn: boolean,
     isSigningUp: boolean,
     isCheckingAuth: boolean,
+    isVerifyingEmail:boolean,
     checkAuth: () => Promise<void>,
     signIn: (formData: object) => Promise<void>,
     signUp: (formData: object) => Promise<void>,
@@ -15,6 +16,7 @@ interface AuthState {
     editingProfile:boolean
     editProfile:(userId:string,formData:object ) => Promise<void>
     userProfileData:null | string 
+    verifyEmail:(code:object)=>Promise<void>
 }
 
 
@@ -26,6 +28,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     result:false,
     editingProfile:false,
     userProfileData:null,
+    isVerifyingEmail:false,
     checkAuth: async () => {
         try {
             const response = await axiosInstance.get('/check-auth');
@@ -59,6 +62,27 @@ export const useAuthStore = create<AuthState>((set) => ({
         }
     },
 
+    verifyEmail:async(code:object)=> {
+        set({isVerifyingEmail:true});
+        try {
+            console.log(code)
+            const response = await axiosInstance.post('/verify-email',code);
+            console.log(response.data);
+            
+            window.location.href="/";
+            set({isVerifyingEmail:false});
+            
+        } catch (error) {
+            if (error instanceof Error) {
+                toast.error((error as any).response.data.message);
+            }
+        }
+        finally{
+            set({isVerifyingEmail:false})
+        }
+
+    },
+
 
     signIn: async (formData: object) => {
         set({ isLoggingIn: true })
@@ -83,7 +107,8 @@ export const useAuthStore = create<AuthState>((set) => ({
     logout:async()=>{
         try{
              await axiosInstance.post("/logout");
-            set({authUser:null});
+                            
+             set({authUser:null});
             toast.success("Logged out successfully");
         } catch (err) {
           

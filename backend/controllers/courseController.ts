@@ -185,6 +185,15 @@ const getAllCourses = async (req: Request, res: Response) => {
   }
 }
 
+const getMyCourses = async (req:Request, res:Response) => {
+  const {userId} = req.params;
+  try{
+    
+  }catch{
+
+  }
+}
+
 const getASingleCourse = async (req: Request, res: Response) => {
   const { courseId } = req.params;
 
@@ -393,5 +402,7 @@ const addComment = async (req:Request,res:Response)=>{
     res.status(500).json({message:err})
   }
 }
+
+
 
 export { uploadFilesAndCreateCourse, getAllCourses, updateCourse, deleteCourse, getASingleCourse, getAllInstructorCourses,getCategories,addRating, addComment };

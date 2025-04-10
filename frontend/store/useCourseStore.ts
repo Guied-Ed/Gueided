@@ -108,12 +108,13 @@ export const useCourseStore = create<CourseState>((set) => ({
     addingToCart:false,
     isRemovingFromCart:false,
     createCourses: async (formData: Course, userId: string) => {
+        set({creatingCourse:true})
         try {
             const response = await axiosInstance.post(`/course/upload-course/${userId}`, formData);
             set((state) => ({
                 instructorCoursesContainer: state.instructorCoursesContainer ? [...state.instructorCoursesContainer, formData] : [formData]
             }))
-            set({ creatingCourse: true });
+            set({ creatingCourse: false});
             toast.success(response.data.message);
         } catch (err) {
             if (err instanceof Error) {
@@ -123,6 +124,8 @@ export const useCourseStore = create<CourseState>((set) => ({
                 toast.error("Something went wrong")
             }
 
+        }finally{
+            set({creatingCourse:false})
         }
     },
     getCourses: async () => {

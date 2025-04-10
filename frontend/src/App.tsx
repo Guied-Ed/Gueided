@@ -19,6 +19,7 @@ import PaymentSuccess from "./pages/PaymentSuccess";
 import { useLocation } from "react-router-dom";
 import VerifyEmail from "./pages/VerifyEmail";
 import Footer from "./components/Footer";
+import MyLearning from "./pages/MyLearning";
 const App = () => {
 
 
@@ -59,6 +60,7 @@ const App = () => {
         <Route path="/instructor" element={<InstructorHome />} />
         <Route path="/all-courses" element={<Courses />} />
         <Route path="/course/set-up" element={authUser && <CourseSetup />} />
+        <Route path="/my-learning" element={authUser && <MyLearning/>}/>
         <Route path="/cart" element={authUser && <Cart />} />
         <Route path="/payment" element={authUser && <Payment />} />
         <Route path="/edit-profile" element={authUser && <EditPage

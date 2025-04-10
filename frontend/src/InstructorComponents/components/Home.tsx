@@ -4,7 +4,7 @@ import PieChart from '../DashboardVisuals/PieChart';
 import BarChat from '../DashboardVisuals/BarChat';
 
 const Home = () => {
-    const { courseContainer, getCourses } = useCourseStore();
+    const { courseContainer, getCourses,instructorCoursesContainer} = useCourseStore();
     
     useEffect(() => {
         getCourses()
@@ -13,7 +13,7 @@ const Home = () => {
     const stats = [
         { 
             title: "Courses", 
-            value: courseContainer.length, 
+            value: instructorCoursesContainer?.length || 0, 
             bg: "bg-green-500", 
             border: "border-green-500" 
         },

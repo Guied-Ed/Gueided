@@ -3,6 +3,7 @@ import { useAuthStore } from '../../../store/useAuthStore';
 import toast from 'react-hot-toast';
 import { useCourseStore } from '../../../store/useCourseStore';
 import { ArrowLeft, ArrowRight, Upload, FileVideo, Image } from 'lucide-react';
+import {Loader} from 'lucide-react'
 
 const CreateCourse = () => {
   const [step, setStep] = useState(1);
@@ -67,7 +68,7 @@ const CreateCourse = () => {
     const success = validatDetails();
 
     if (success === true) {
-      const formData = new FormData();
+      const formData:any = new FormData();
 
       formData.append("tittle", tittle);
       formData.append("description", description);
@@ -345,7 +346,7 @@ const CreateCourse = () => {
                 disabled={creatingCourse}
                 className="px-6 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 disabled:bg-green-400"
               >
-                {creatingCourse ? 'Creating Course...' : 'Submit Course'}
+                {creatingCourse ?   <Loader className="w-5 h-5 animate-spin" /> : 'Submit Course'}
               </button>
             )}
           </div>

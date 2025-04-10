@@ -1,6 +1,8 @@
 import React, { HtmlHTMLAttributes, useState } from 'react'
 import { MessageCircleReplyIcon } from 'lucide-react'
 import { useAuthStore } from '../../store/useAuthStore'
+import toast from 'react-hot-toast'
+import {Loader} from 'lucide-react'
 
 // Interface for the event handler //
 interface HandleChangeEvent {
@@ -12,7 +14,7 @@ interface HandleChangeEvent {
 const VerifyEmail = () => {
 
     // Extracting the authUser From Zustand store 
-    const { authUser } = useAuthStore() as { authUser: { user: { _id: string, email: string, firstName: string, lastName: string, biography: string } } | null }
+    const { authUser, verifyEmail, isVerifyingEmail } = useAuthStore() as { authUser: { user: { _id: string, email: string, firstName: string, lastName: string, biography: string } } | null, verifyEmail: (code: object) => Promise<void>, isVerifyingEmail: boolean }
 
     // useState for the Otp Input
     // Defaulting the input to take 4 Values
@@ -86,6 +88,13 @@ const VerifyEmail = () => {
 
 
 
+    function handleSubmitVerification (){
+        const token = otp.join("");
+        if(token.length !== 6 ) return toast.error("Token must be 6 numbers");
+        verifyEmail({code:token})
+    }
+
+
     // Saving the userEmail to the userEmail
     const userEmail = authUser?.user.email;
     return (
@@ -123,7 +132,10 @@ const VerifyEmail = () => {
                 </div>
 
                 <div className='w-full flex flex-col items-center justify-center mt-4'>
-                    <button className='bg-blue-500 w-full p-3 rounded-md text-white hover:bg-gray-400 hover:text-black transition duration-300'>Verify Email</button>
+                <button className='bg-blue-500 w-full p-3 rounded-md text-white flex items-center justify-center hover:bg-gray-400 hover:text-black transition duration-300' onClick={handleSubmitVerification }>
+                        {isVerifyingEmail ? <Loader className='animate-spin size-5 ' color='white'  /> : "Verify Email"}
+                        
+                    </button>
                     <p className='text-gray-400 mt-4'>Didnt recieve an Email? <span className='text-black cursor-pointer'>Resend Code</span></p>
                 </div>
             </div>

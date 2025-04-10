@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import bcrypt from 'bcryptjs';
 import generateTokenAndSetToken from "../utils/generateTokenAndSetCookie";
 import mongoose, { Date } from "mongoose";
-import { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendResetSucessfulEmail } from "../mails/email";
+import { sendEmail,sendPasswordResetEmail,sendResetSuccessfullEmail } from "../mail/sendEmail";
 import crypto from 'crypto';
 
 interface SignUpRequestBody {
@@ -69,7 +69,7 @@ const signup = async (req: Request<{}, {}, SignUpRequestBody>, res: Response): P
         const userObject = user.toObject();
 
         generateTokenAndSetToken(res, user._id.toString());
-        await sendVerificationEmail(user.email, verificationToken);
+        await sendEmail(user.email, verificationToken,firstName);
         return res.status(201).json({
             success: true, user: {
                 ...userObject,
@@ -88,26 +88,29 @@ const verifyEmail = async (req: Request<{}, {}, SignInReqBody>, res: Response): 
     const { code } = req.body;
 
     try {
+
+        console.log(code)
         // Find the user based on token and the expiredDate
         const user = await User.findOne({
-            // verificationToken: code,
+            verificationToken: { $exists: true },
             verificationTokenExpiresDate: { $gte: Date.now() }
         });
-        if (!user) return res.status(404).json({ success: false, message: "Invalid or exired Token" });
-
+        console.log(user)
+        if (!user) return res.status(404).json({ success: false, message: "User Not Found" });
+        const hashedToken = await bcrypt.hash(code, 10);
+        user.verificationToken = hashedToken;
         // Compare the given token provided with the hashed token of the use
         const isMatch = await bcrypt.compare(code, user.verificationToken || "");
-
-
+        console.log(code, user.verificationToken)
+        console.log(isMatch)
+     
         if (!isMatch) return res.status(404).json({ success: false, message: "Invalid or expired Token" })
         user.isVerified = true;
         user.verificationToken = undefined;
         user.verificationTokenExpiresDate = undefined;
         await user.save();
 
-        // Send Welcome email to the user //
-        await sendWelcomeEmail(user.email, user.firstName);
-        // Convert the respond to object instead of spreading the document 
+       
         const userObject = user.toObject();
         res.status(200).json({
             success: true, message: "Email Verified sucessfuly", user: {
@@ -169,7 +172,7 @@ const forgotPassword = async (req: Request<{}, {}, ForgotPasswordEmail>, res: Re
 
 
         await user.save();
-        await sendPasswordResetEmail(email, `${process.env.CLIENT_URL}/reset-password/${resetPasswordToken}`)
+        await sendPasswordResetEmail(email,user.firstName, `${process.env.CLIENT_URL}/reset-password/${resetPasswordToken}`)
         res.status(200).json({ success: true, message: "Reset Password email sent successfully" })
     } catch (err: unknown) {
         console.log(err);
@@ -193,7 +196,7 @@ const resetPassword = async (req: Request<{ token: string }, {}, resetPassord>, 
         user.resetPasswordToken = undefined;
         user.resetPasswordExpiresDate = undefined;
         await user.save();
-        await sendResetSucessfulEmail(user.email);
+        await sendResetSuccessfullEmail(user.email);
         res.status(200).json({ success: true, message: "Password reset successfully" })
 
     } catch (err: unknown) {

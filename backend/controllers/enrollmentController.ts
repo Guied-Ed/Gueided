@@ -32,6 +32,10 @@ const enrollStudent = async (req: Request, res: Response) => {
         const { email, amount } = req.body;
         const { userId, courseIds } = req.params;
 
+        console.log("userId", userId);
+        console.log("courseIds", courseIds);
+        console.log("email", email);
+        console.log("amount", amount);
         if (!userId || !courseIds) {
             res.status(400).json({ message: "userId and courseIds are required" });
             return
@@ -77,6 +81,8 @@ const enrollStudent = async (req: Request, res: Response) => {
                     }
                 }
             );
+
+           
 
             // Save payment reference
             newEnrollment.paymentReference = response.data.data.reference;
@@ -161,10 +167,10 @@ const verifyPayment = async (req: Request, res: Response) => {
 const getAllEnrolledCourses = async (req: Request<{ userId: string }>, res: Response) => {
     try {
         let { userId } = req.params;
-        userId = userId.trim(); // Trim to remove unwanted spaces or newlines
+        userId = userId.trim(); 
 
 
-        // Check if the user exists
+       
         const user = await User.findById(userId);
         if (!user) {
             res.status(404).json({ message: "User not found" });
