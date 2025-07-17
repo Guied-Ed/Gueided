@@ -62,7 +62,7 @@ const VerifyEmail = () => {
             otpInputs[Math.min(updatedOtp.length, 3)]?.focus(); // Focus last filled box
         }, 10);
     }
-
+    
   
 
     // Function to delete an input from BackSpace Event

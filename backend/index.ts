@@ -20,8 +20,9 @@ app.use('/api',userRouter);
 app.use('/api/course',courseRouter);
 const port: number = parseInt(process.env.PORT || '3000',10);
 
-app.listen(5000, (): void => {
-    connectDB();
+connectDB();
+app.listen(port, (): void => {
+
     console.log(`Listening on port ${port}`);
 });
 

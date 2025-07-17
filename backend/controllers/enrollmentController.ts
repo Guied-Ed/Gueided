@@ -54,10 +54,14 @@ const enrollStudent = async (req: Request, res: Response) => {
             }
 
             const existingEnrollment = await Enrollment.findOne({ courseId, userId });
-            if (existingEnrollment) {
-                failedCourses.push({ courseId, error: "Already enrolled" });
-                continue;
+            if(existingEnrollment){
+              res.status(404).json({message: "Your are Already Enrolled"});
+                return 
             }
+            // if (existingEnrollment) {
+            //     failedCourses.push({ courseId, error: "Already enrolled" });
+            //     continue;
+            // }
 
             // Create new enrollment
             const newEnrollment = new Enrollment({ courseId, userId });

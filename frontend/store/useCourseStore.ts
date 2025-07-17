@@ -129,7 +129,8 @@ export const useCourseStore = create<CourseState>((set) => ({
         }
     },
     getCourses: async () => {
-        set({ isFetchingData: true })
+        set({ isFetchingData: true });
+        console.log("Fetching courses...");
         try {
             const response = await axiosInstance.get('/course/get-courses');
             console.log(response.data.data);

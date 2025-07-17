@@ -9,56 +9,56 @@ import toast from 'react-hot-toast';
 
 
 type EventChange = {
-    target:{
-        name:string
-        value:string
+    target: {
+        name: string
+        value: string
     }
 }
 const SignIn = () => {
-    const {  isLoggingIn,signIn } = useAuthStore();
+    const { isLoggingIn, signIn, showForgotPasswordText } = useAuthStore();
     const [showPassword, setShowPassword] = useState(false);
-    const [formData,setFormData] = useState({email:"",password:""});
-    const handleChange = (evt:EventChange) =>{
-        const {name,value} = evt.target;
-        setFormData((prev)=>({
-            ...prev, [name]:value
+    const [formData, setFormData] = useState({ email: "", password: "" });
+
+    const handleChange = (evt: EventChange) => {
+        const { name, value } = evt.target;
+        setFormData((prev) => ({
+            ...prev, [name]: value
         }))
     }
 
-    
 
-    const validateUser = () =>{
-        if(!formData.email) return toast.error("Email is required");
-        if(!formData.password) return toast.error("Password is required");
-        if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) return toast.error("Invalid email format")
+
+    const validateUser = () => {
+        if (!formData.email) return toast.error("Email is required");
+        if (!formData.password) return toast.error("Password is required");
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) return toast.error("Invalid email format")
         return true;
     }
 
 
-    const handleSubmit = (e:any) =>{
+    const handleSubmit = (e: any) => {
         e.preventDefault();
         const success = validateUser();
-        if(success === true){
+        if (success === true) {
             signIn(formData);
-          
         }
     }
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2  bg-gray-100 min-h-screen">
-            <div className="flex flex-col justify-center items-center p-10 sm:p-12">
-                <div className="w-full max-w-md space-x-8 bg-white p-8 rounded-lg shadow-lg">
+        <div className="grid grid-cols-1 lg:grid-cols-2 md:w-full bg-gray-100 min-h-screen">
+            <div className="flex flex-col sm:justify-center  sm:items-center p-2 sm:p-12">
+                <div className="w-full max-w-md space-x-2 sm:space-x-8 h-full sm:h-auto bg-white  p-2 sm:p-8 rounded-lg shadow-lg">
                     <div className="text-center mb-8">
                         <div className="flex flex-col items-center gap-2">
                             <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
                                 <MessageSquare className="w-6 h-6 text-primary" color='green' />
                             </div>
                             <h1 className="text-3xl font-semibold text-gray-800">Log In</h1>
-                            <p className="text-gray-600">Sign up today and unlock endless learning opportunities!</p>
+                            <p className="text-gray-600 sm:text-xl text-sm ">Sign In today and unlock endless learning opportunities!</p>
                         </div>
                     </div>
                     <form className="space-y-6" onSubmit={handleSubmit}>
                         {/* User Name Field */}
-               
+
 
                         {/* Email Field */}
                         <div className="form-control">
@@ -114,28 +114,48 @@ const SignIn = () => {
                         {/* Submit Button */}
                         <button
                             type="submit"
-                            className={`bg-[#9185de] w-full py-3 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-primary ${isLoggingIn? "flex items-center justify-center" : ""}`}
-                            disabled={ isLoggingIn}
+                            className={`bg-[#9185de] w-full py-3 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-primary ${isLoggingIn ? "flex items-center justify-center" : ""}`}
+                            disabled={isLoggingIn}
                         >
-                            { isLoggingIn? (
+                            {isLoggingIn ? (
                                 <>
                                     <Loader className="w-5 h-5 animate-spin" />
-                                 
+
                                 </>
                             ) : (
                                 'Create Account'
                             )}
                         </button>
+
+
                     </form>
 
                     {/* Login Link */}
-                    <div className="text-center mt-4">
+                    <div className="text-center mt-2 mb-4">
                         <p className="text-gray-600">
                             Dont have an account?{' '}
                             <Link to="/signup" className="text-primary hover:text-primary-dark">
                                 Sign Up
                             </Link>
                         </p>
+
+
+                        {
+
+                            showForgotPasswordText && <div className='flex mt-2 justify-center gap-2 items-center '>
+
+                                <p className='text-sm text-gray-600'>
+                                    Forgot Password ?
+                                </p>
+                                <Link to="/forgotPassword" className='text-sm font-bold text-blue-700'>
+                                    Click Here
+                                </Link>
+                            </div>
+
+                        }
+
+
+
                     </div>
                 </div>
             </div>

@@ -7,14 +7,14 @@ interface EnrolledService {
     enrollments?: [],
     failedCourses?: [],
     enrollUser?: (userId: string, courseId: string, payload: { email: string, amount: number }) => Promise<void>
-    verifyPayment?:(reference:any) => Promise<void>
+    verifyPayment?: (reference: any) => Promise<void>
     getAllEnrollCourses?: (userId: string) => Promise<void>
-    fetchingEnrollments:boolean
+    fetchingEnrollments: boolean
 }
 
 export const useEnrollStore = create<EnrolledService>((set) => ({
     isEnrolled: false,
-    fetchingEnrollments:false,
+    fetchingEnrollments: false,
     enrollUser: async (userId: string, courseId: string, { email, amount }: { email: string, amount: number }) => {
         set({ isEnrolled: true })
         try {
@@ -29,20 +29,19 @@ export const useEnrollStore = create<EnrolledService>((set) => ({
                 window.location.href = authorizationUrls[0].authorization_url;
             }
             set({ enrollments, failedCourses, isEnrolled: false });
-            set({isEnrolled:false})
+            set({ isEnrolled: false })
             console.log("enrollments", enrollments);
             console.log("failedCourses", failedCourses);
+            console.log(response.data)
             // toast.success(response.data);
             // return response.data
-        } catch (error) {
-            if (error instanceof Error) {
-                toast.error(error.message);
-            } else {
-                toast.error('An unknown error occurred');
-            }
-            set({isEnrolled:false})
-        }finally{
-            set({isEnrolled:false})
+        } catch (error: any) {
+            const message = error?.response?.data?.message ?? error?.message ?? "An unknown error occurred";
+            toast.error(message);
+            set({ isEnrolled: false });
+        }
+        finally {
+            set({ isEnrolled: false })
         }
     },
 
@@ -52,7 +51,7 @@ export const useEnrollStore = create<EnrolledService>((set) => ({
             const response = await axiosInstance.get(`/enroll/enrolled-courses/${userId}`)
             console.log("enrollment", response.data);
             set({ enrollments: response.data.courses, fetchingEnrollments: false })
-            
+
         } catch (error) {
             if (error instanceof Error) {
                 toast.error(error.message);
@@ -62,7 +61,7 @@ export const useEnrollStore = create<EnrolledService>((set) => ({
             set({ fetchingEnrollments: false })
         }
     },
-    verifyPayment: async (reference:any) =>{
+    verifyPayment: async (reference: any) => {
         try {
             const response = await axiosInstance.get(`enroll/payment-success?reference=${reference}`)
             return response.data

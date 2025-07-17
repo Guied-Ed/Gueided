@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useEnrollStore } from '../../store/useEnrollStore';
 import { useAuthStore } from '../../store/useAuthStore';
 import { Loader } from 'lucide-react';
+import { toast } from "react-hot-toast"
 type CourseType = {
   courseId: string
   _id: string
@@ -44,15 +45,24 @@ interface Video {
 
 const CourseDetailBanner: React.FC<CourseDetailBannerProps> = ({ singleCourseContainer }) => {
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
-  const [email,setEmail] = useState("");
-  const {enrollUser,isEnrolled } = useEnrollStore();
+  const [email, setEmail] = useState("");
+  const { enrollUser, isEnrolled } = useEnrollStore();
+  const [modal, setModal] = useState(false);
 
- const {authUser} = useAuthStore() as unknown as { authUser: { user: any } };
- const userEmail = authUser.user.email;
- const userID = authUser?.user._id;
+  const { authUser } = useAuthStore() as unknown as { authUser: { user: any } };
+  const userEmail = authUser?.user?.email;
+  const userID = authUser?.user._id;
 
   const openModal = (video: Video) => {
     setSelectedVideo(video);
+  }
+
+  const handleEnrollment = (userId: string, id: string, _params?: { email?: string; amount?: number }) => {
+    if (authUser && enrollUser) {
+      enrollUser(userId, id, { email: userEmail, amount: singleCourseContainer?.price })
+    } else {
+      setModal(true)
+    }
   }
 
   const closeModal = () => {
@@ -61,11 +71,49 @@ const CourseDetailBanner: React.FC<CourseDetailBannerProps> = ({ singleCourseCon
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+
+      {modal && (
+        <motion.div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          initial={{ opacity: 0, y: 0 }}
+          animate={{ opacity: 1, y: 10 }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+          exit={{ opacity: 0, y: 0 }}
+        >
+          <div className="bg-white rounded-2xl shadow-lg p-6 max-w-md w-full space-y-4 text-center">
+            <h2 className="text-2xl font-bold text-gray-800">🌟 We're Excited You're Here!</h2>
+
+            <p className="text-gray-600">
+              We’re thrilled that you’re loving what you see! 💖 But before you dive in...
+            </p>
+
+            <p className="text-gray-600">
+              📋 We need just a few details from you. This helps us track your learning journey
+              and make sure everything runs smoothly throughout the course. 🚀
+            </p>
+
+            <p className="text-gray-600">
+              ✨ Let’s get you signed up so you can start learning with ease and joy!
+            </p>
+
+            <div className="flex justify-between gap-4 pt-4">
+              <button className="flex-1 py-2 px-4 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 transition"
+              onClick={()=> setModal(false)}
+              >
+                🔍 Keep Exploring
+              </button>
+              <button className="flex-1 py-2 px-4 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition">
+                🚀 Sign Up Now
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
       {/* Course Header Section */}
       <div className="w-full py-12 px-4 sm:px-8 bg-gradient-to-r from-purple-600 to-blue-600">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-8 items-center">
           {/* Course Thumbnail */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             className="w-full md:w-1/3 aspect-video bg-white dark:bg-gray-800 p-2 rounded-xl shadow-xl overflow-hidden"
@@ -78,7 +126,7 @@ const CourseDetailBanner: React.FC<CourseDetailBannerProps> = ({ singleCourseCon
           </motion.div>
 
           {/* Course Details */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             className="w-full md:w-2/3 space-y-4 text-white"
@@ -91,10 +139,10 @@ const CourseDetailBanner: React.FC<CourseDetailBannerProps> = ({ singleCourseCon
                 {singleCourseContainer.level}
               </span>
             </div>
-            
+
             <h1 className="text-3xl sm:text-4xl font-bold">{singleCourseContainer.tittle}</h1>
             <p className="text-lg opacity-90">{singleCourseContainer.description}</p>
-            
+
             <div className="flex flex-wrap gap-4 pt-2">
               <div className="flex items-center gap-2">
                 <Users className="w-5 h-5" />
@@ -112,26 +160,28 @@ const CourseDetailBanner: React.FC<CourseDetailBannerProps> = ({ singleCourseCon
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="px-8 py-3 bg-white flex items-center justify-center text-purple-600 rounded-lg font-medium shadow-lg hover:shadow-xl transition-all"
-                
-                onClick={()=>{ if(enrollUser){
-                  enrollUser(userID,singleCourseContainer._id,{email:userEmail,amount:singleCourseContainer.price})
-                }}}
+
+                onClick={() => {
+                  if (enrollUser) {
+                    handleEnrollment(userID, singleCourseContainer._id, { email: userEmail, amount: singleCourseContainer.price })
+                  }
+                }}
               >
                 {
-                  isEnrolled ? <Loader className='animate-spin size-5 ' color='white'  /> : "Enroll Now"
+                  isEnrolled ? <Loader className='animate-spin size-5 ' color='white' /> : "Enroll Now"
                 }
-             
+
               </motion.button>
             </div>
           </motion.div>
         </div>
       </div>
 
-      
+
 
       {/* Course Content Section */}
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-8">
-        <motion.h2 
+        <motion.h2
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           className="text-3xl font-bold text-center mb-12 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400"
@@ -150,7 +200,7 @@ const CourseDetailBanner: React.FC<CourseDetailBannerProps> = ({ singleCourseCon
               viewport={{ once: true }}
               className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow"
             >
-              <div 
+              <div
                 className="relative aspect-video bg-gray-200 dark:bg-gray-700 cursor-pointer group"
                 onClick={() => openModal(video)}
               >
@@ -175,7 +225,7 @@ const CourseDetailBanner: React.FC<CourseDetailBannerProps> = ({ singleCourseCon
         </div>
 
         {/* Instructor Section */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           className="mt-16 bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden"
@@ -212,7 +262,7 @@ const CourseDetailBanner: React.FC<CourseDetailBannerProps> = ({ singleCourseCon
       {/* Video Modal */}
       {selectedVideo && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/80 z-50 p-4">
-          <motion.div 
+          <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             className="relative w-full max-w-4xl bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-2xl"
@@ -224,9 +274,9 @@ const CourseDetailBanner: React.FC<CourseDetailBannerProps> = ({ singleCourseCon
               <X size={24} />
             </button>
             <div className="aspect-video bg-black">
-              <video 
-                controls 
-                autoPlay 
+              <video
+                controls
+                autoPlay
                 className="w-full h-full object-contain"
               >
                 <source src={selectedVideo.videoFilePath} type="video/mp4" />

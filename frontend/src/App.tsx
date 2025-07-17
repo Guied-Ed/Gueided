@@ -20,8 +20,13 @@ import { useLocation } from "react-router-dom";
 import VerifyEmail from "./pages/VerifyEmail";
 import Footer from "./components/Footer";
 import MyLearning from "./pages/MyLearning";
+import { useNavigate } from "react-router-dom";
+import ForgotPassword from "./pages/ForgotPassword";
+import ForgotPasswordRedirect from "./pages/ForgotPasswordRedirect";
+import { useMatch } from "react-router-dom";
 const App = () => {
 
+  const navigate = useNavigate();
 
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore() as { authUser: { user: { _id: string, email: string, firstName: string, lastName: string, biography: string } } | null, checkAuth: () => void, isCheckingAuth: boolean };
 
@@ -30,28 +35,33 @@ const App = () => {
   }, [checkAuth])
 
 
+  //  const matchCourseDetail = useMatch("/course/:courseId");
+  const matchResetPassword = useMatch("/reset-password/:token");
+
   const location = useLocation();
-  const path = ["/payment-success", "/verify-email", "/signup", "/signin", "/course/:courseId", "/instructor", "/course/set-up", "/cart", "/payment", "/edit-profile"]
+  const path = ["/payment-success", "/verify-email", "/signup", "/signin", "/course/:courseId", "/instructor", "/course/set-up", "/cart", "/payment", "/edit-profile", "/forgotPassword", "/reset-password/:token"]
 
 
+
+
+  const shouldHideLayout = path.includes(location.pathname) || matchResetPassword;
 
 
   if (isCheckingAuth && !authUser) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <Loader className="size-10 animate-spin" />
-      </div>
-    )
-  } 
+    navigate("/signin");
+    return
+  }
   return (
     <div >
 
       {
-        !path.includes(location.pathname) &&
-        <Navbar
-          authUser={authUser}
-        />
+        !shouldHideLayout && <Navbar authUser={authUser} />
       }
+
+
+      {/* {
+        !shouldHideLayout && <Footer />
+      } */}
       <Routes >
         <Route path="/course/:courseId" element={<CourseDetail />} />
         <Route path="/" element={<Home />} />
@@ -60,19 +70,21 @@ const App = () => {
         <Route path="/instructor" element={<InstructorHome />} />
         <Route path="/all-courses" element={<Courses />} />
         <Route path="/course/set-up" element={authUser && <CourseSetup />} />
-        <Route path="/my-learning" element={authUser && <MyLearning/>}/>
+        <Route path="/my-learning" element={authUser && <MyLearning />} />
         <Route path="/cart" element={authUser && <Cart />} />
         <Route path="/payment" element={authUser && <Payment />} />
         <Route path="/edit-profile" element={authUser && <EditPage
           authUser={authUser}
         />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/forgotPassword" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ForgotPasswordRedirect />} />
+
         <Route path="/verify-email" element={<VerifyEmail />} />
       </Routes>
 
-      {
-        !path.includes(location.pathname) &&
-      <Footer/>
+       {
+        !shouldHideLayout && <Footer />
       }
       <Toaster position="top-right" reverseOrder={false} />
     </div>
