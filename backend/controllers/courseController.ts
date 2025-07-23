@@ -379,10 +379,12 @@ const addComment = async (req:Request,res:Response)=>{
       const {userId,comment} = req.body;
       
       const course = await Course.findById(courseId);
-      const existingComment = course?.comments.find(comment => comment.userId === userId);
+      const existingComment = course?.comments.find(c => c.userId.toString() === userId.toString() && c.comment === comment);
 
+      
       if(existingComment) {
-        res.status(400).json({message:"You have added a comment already"})
+        res.status(400).json({message:"You have added a comment already"});
+        return
       }
 
       const updateCourse = await Course.findByIdAndUpdate(courseId,{

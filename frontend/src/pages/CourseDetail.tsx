@@ -6,13 +6,13 @@ const CourseDetail = () => {
 
   const { courseId } = useParams();
   console.log(courseId)
-  const { getCourse, isFetchingSingleData,singleCourseContainer} = useCourseStore();
+  const { getCourse, isFetchingSingleData, singleCourseContainer } = useCourseStore();
   useEffect(() => {
     getCourse(courseId)
   }, [getCourse])
 
   console.log(singleCourseContainer)
-console.log(singleCourseContainer?.videos)
+  console.log(singleCourseContainer?.videos)
   return (
     <div>
 
@@ -21,7 +21,7 @@ console.log(singleCourseContainer?.videos)
           singleCourseContainer={singleCourseContainer}
         />
       )}
-    
+
     </div>
   )
 }

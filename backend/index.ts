@@ -22,7 +22,6 @@ const port: number = parseInt(process.env.PORT || '3000',10);
 
 connectDB();
 app.listen(port, (): void => {
-
     console.log(`Listening on port ${port}`);
 });
 

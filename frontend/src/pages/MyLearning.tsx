@@ -17,12 +17,6 @@ const MyLearning = () => {
   useEffect(() => {
     if (getAllEnrollCourses && userId) {
       getAllEnrollCourses(userId)
-        .then(() => {
-          // No need to do anything here as Zustand will update the state
-        })
-        .catch(error => {
-          console.error("Error fetching enrollments:", error);
-        });
     }
   }, [getAllEnrollCourses, userId]);
 
@@ -63,6 +57,8 @@ const MyLearning = () => {
       </div>
     );
   }
+
+  
 
   return (
     <main className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-16 pb-12">
@@ -188,6 +184,12 @@ const MyLearning = () => {
                           <Clock className="h-4 w-4 mr-1" />
                           <span>{course.duration} hours</span>
                         </div>
+
+
+
+                        <button>
+                          Good Here
+                        </button>
                       </div>
                     </div>
                   </motion.div>

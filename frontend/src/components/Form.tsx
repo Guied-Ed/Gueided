@@ -82,7 +82,7 @@ const Form = () => {
                             whileTap={{ scale: 0.97 }}
                         >
                             <Link 
-                                to="/" 
+                                to="https://chat.whatsapp.com/IsQVpBESiDe5QRHLpMqT0p?mode=r_t" 
                                 className="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-orange-600 to-orange-500 text-white rounded-lg font-medium shadow hover:shadow-lg transition-all"
                             >
                                 Join Our Community

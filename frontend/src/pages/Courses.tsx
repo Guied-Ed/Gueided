@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useCourseStore } from '../../store/useCourseStore';
-import { Loader, Loader2, ArrowRight } from 'lucide-react';
+import { Loader, Loader2, ArrowRight, Book, Bot } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuthStore } from '../../store/useAuthStore';
 import { motion } from 'framer-motion';
@@ -33,14 +33,29 @@ const Courses = () => {
     return (
         <div className="p-4 sm:p-8 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 min-h-screen">
             {/* Header Section */}
+            <div className="flex gap-4 mt-6 justify-end">
+                {/* Learn with Docs */}
+                <button className="flex items-center gap-2 bg-blue-600 text-white px-5 py-3 rounded-xl hover:bg-blue-700 transition-all shadow-md">
+                    <Book size={20} />
+                    <span>Learn with Docs</span>
+                </button>
+
+                {/* Learn with AI */}
+                <button className="flex items-center gap-2 bg-green-600 text-white px-5 py-3 rounded-xl hover:bg-green-700 transition-all shadow-md">
+                    <Bot size={20} />
+                    <span>Learn with AI</span>
+                </button>
+            </div>
             <div className="max-w-7xl mx-auto">
                 <h1 className="text-3xl sm:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 mb-6">
                     Explore Our Courses
                 </h1>
 
+
+
                 {/* Filter Controls */}
                 <div className="flex flex-col sm:flex-row justify-center gap-4 mb-10">
-                    <motion.button 
+                    <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         className="px-6 py-2 rounded-lg bg-white dark:bg-gray-800 shadow-md hover:shadow-lg transition-all text-gray-800 dark:text-white font-medium border border-gray-200 dark:border-gray-700"
@@ -48,8 +63,8 @@ const Courses = () => {
                     >
                         All Courses
                     </motion.button>
-                    
-                    <select 
+
+                    <select
                         className="px-6 py-2 rounded-lg bg-white dark:bg-gray-800 shadow-md hover:shadow-lg transition-all text-gray-800 dark:text-white font-medium border border-gray-200 dark:border-gray-700"
                         onChange={(e) => {
                             const selectedValue = e.target.value;
@@ -61,8 +76,8 @@ const Courses = () => {
                         <option value="-price">High to Low</option>
                         <option value="price">Low to High</option>
                     </select>
-                    
-                    <select 
+
+                    <select
                         className="px-6 py-2 rounded-lg bg-white dark:bg-gray-800 shadow-md hover:shadow-lg transition-all text-gray-800 dark:text-white font-medium border border-gray-200 dark:border-gray-700"
                     >
                         <option value="">Sort by Rating</option>
@@ -79,7 +94,7 @@ const Courses = () => {
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {courseContainer.map((course, index) => (
-                            <motion.div 
+                            <motion.div
                                 key={index}
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
@@ -88,16 +103,16 @@ const Courses = () => {
                                 className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-200 dark:border-gray-700"
                             >
                                 <div className="relative h-48 w-full overflow-hidden">
-                                    <img 
-                                        src={course.thumbnail} 
-                                        alt={course.tittle} 
-                                        className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" 
+                                    <img
+                                        src={course.thumbnail}
+                                        alt={course.tittle}
+                                        className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                                     />
                                     <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
                                         <span className="text-white font-medium">{course.category}</span>
                                     </div>
                                 </div>
-                                
+
                                 <div className="p-6">
                                     <Link to={`/course/${course._id}`} className="group">
                                         <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
@@ -107,7 +122,7 @@ const Courses = () => {
                                             {course.description}
                                         </p>
                                     </Link>
-                                    
+
                                     <div className="flex flex-wrap gap-2 mb-4">
                                         <span className="text-sm px-3 py-1 bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 rounded-full">
                                             {course.level}
@@ -116,7 +131,7 @@ const Courses = () => {
                                             {course.duration} hours
                                         </span>
                                     </div>
-                                    
+
                                     <div className="flex items-center justify-between mb-4">
                                         <span className="text-lg font-bold text-gray-900 dark:text-white">
                                             ${course.price}
@@ -125,7 +140,7 @@ const Courses = () => {
                                             By {course.instructor?.firstName} {course.instructor?.lastName}
                                         </span>
                                     </div>
-                                    
+
                                     <motion.button
                                         whileHover={{ scale: 1.02 }}
                                         whileTap={{ scale: 0.98 }}

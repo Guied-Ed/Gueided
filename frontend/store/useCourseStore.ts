@@ -32,6 +32,7 @@ interface Course {
     ratings: any[];
     thumbnail: string;
     tittle: string;
+    comment:string[];
     updatedAt: string;
     videos: any[];
     __v: number;
@@ -282,6 +283,13 @@ export const useCourseStore = create<CourseState>((set) => ({
                 toast.error((error as any).response.data.message)
             }
             set({isRemovingFromCart:false})
+        }
+    },
+    addComment:async () => {
+        try {
+            const response = await axiosInstance.post
+        } catch (error) {
+            
         }
     }
 
