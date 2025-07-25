@@ -1,20 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import { useEnrollStore } from '../../store/useEnrollStore';
 import { useAuthStore } from '../../store/useAuthStore';
+import { useCourseStore } from '../../store/useCourseStore';
 import { PlayCircle, BookOpen, Clock, ChevronRight, Loader } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import CommentForm from '../components/CommentForm';
+import { axiosInstance } from '../../lib/axios';
+import toast from 'react-hot-toast';
 
 const MyLearning = () => {
   const { getAllEnrollCourses, enrollments, fetchingEnrollments } = useEnrollStore();
   const { authUser } = useAuthStore() as unknown as { authUser: { user: any } };
+  const { courseContainer } = useCourseStore();
   const userId = authUser?.user?._id;
   const [selectedCourse, setSelectedCourse] = useState<any>(null);
   const [selectedVideo, setSelectedVideo] = useState<any>(null);
   const [activeTab, setActiveTab] = useState('courses');
   const [courses, setCourses] = useState<any[]>([]);
+  const [commentModal, setCommentModal] = useState(false);
+  const [courseForComment, setCourseForComment] = useState<any>(null);
+
+  console.log(enrollments)
 
   useEffect(() => {
+
     if (getAllEnrollCourses && userId) {
       getAllEnrollCourses(userId)
     }
@@ -58,7 +68,26 @@ const MyLearning = () => {
     );
   }
 
-  
+
+
+
+  const user = authUser.user._id;
+
+
+  function checkIfUserCommented(course: any): boolean {
+    return course.comments.some((c: any) => c.userId === user);
+  }
+
+  function openCommentModal(course: any) {
+    setCourseForComment(course)
+    setCommentModal(true)
+  }
+
+  function closeCommentModal() {
+    setCommentModal(false)
+  }
+
+  console.log(selectedCourse?._id)
 
   return (
     <main className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-16 pb-12">
@@ -70,6 +99,40 @@ const MyLearning = () => {
             {selectedCourse ? selectedCourse.tittle : 'Your enrolled courses'}
           </p>
         </div>
+
+        {commentModal && (
+          <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50'>
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              className='bg-white dark:bg-gray-800 p-6 rounded-xl shadow-2xl w-full max-w-md relative border border-gray-200 dark:border-gray-700'
+            >
+              <CommentForm
+                onSubmit={async (comment) => {
+                  console.log("Submitted comment:", comment);
+
+                  try {
+                    const response = await axiosInstance.post(`/course/comment/${courseForComment?._id}`, { userId: user, comment });
+                    console.log(response)
+                    toast.success(response.data.message)
+                  } catch (error) {
+                    if (error instanceof Error) {
+                      toast.error((error as any).response.data.message);
+                    } else {
+                      toast.error('An unknown error occurred');
+                    }
+                    console.log(error)
+
+                  }
+
+                }}
+                onClose={() => setCommentModal(false)}
+              />
+            </motion.div>
+          </div>
+        )}
 
         {/* Tabs */}
         <div className="border-b border-gray-200 dark:border-gray-700 mb-8">
@@ -156,7 +219,7 @@ const MyLearning = () => {
                     transition={{ duration: 0.3 }}
                     whileHover={{ scale: 1.02 }}
                     className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden cursor-pointer"
-                    onClick={() => openCourse(course)}
+
                   >
                     <div className="aspect-video bg-gray-200 dark:bg-gray-700 relative">
                       <img
@@ -164,7 +227,7 @@ const MyLearning = () => {
                         alt={course.tittle}
                         className="w-full h-full object-cover"
                       />
-                      <div className="absolute inset-0 bg-black/10 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                      <div className="absolute inset-0 bg-black/10 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity" onClick={() => openCourse(course)}>
                         <PlayCircle className="h-12 w-12 text-white/90" />
                       </div>
                     </div>
@@ -184,18 +247,25 @@ const MyLearning = () => {
                           <Clock className="h-4 w-4 mr-1" />
                           <span>{course.duration} hours</span>
                         </div>
+                        {!checkIfUserCommented(course) &&
+                          <button className="flex items-center gap-2 text-sm bg-green-600 text-white px-3 py-1 rounded-xl hover:bg-green-700 transition-all shadow-md" onClick={() => openCommentModal(course)}>
+                            Add a Comment
 
+                          </button>
 
-
-                        <button>
-                          Good Here
-                        </button>
+                        }
                       </div>
+
                     </div>
+
+
+
                   </motion.div>
                 ))}
+
               </div>
             )}
+
           </>
         )}
 

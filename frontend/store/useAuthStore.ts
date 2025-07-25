@@ -21,7 +21,7 @@ interface AuthState {
     forgotPassword: (email: string) => Promise<boolean>
     sendingEmailToUser: boolean
     resetPassword: (password: string, token: string) => Promise<boolean>
-    resetingPassword:boolean
+    resetingPassword: boolean
 }
 
 
@@ -137,16 +137,16 @@ export const useAuthStore = create<AuthState>((set) => ({
         }
     },
 
-    resetPassword: async (password:string, token:string) => {
-        set({resetingPassword: true})
+    resetPassword: async (password: string, token: string) => {
+        set({ resetingPassword: true })
         try {
-            const response = await axiosInstance.post(`/reset-password/${token}`, {password});
-            set({resetingPassword:false});
+            const response = await axiosInstance.post(`/reset-password/${token}`, { password });
+            set({ resetingPassword: false });
             console.log(response.data);
             return true
         } catch (error) {
             console.log(error);
-            set({resetingPassword:false});
+            set({ resetingPassword: false });
             return false
         }
     },
@@ -157,6 +157,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
             set({ authUser: null });
             toast.success("Logged out successfully");
+            // window.location.assign('/signin');
         } catch (err) {
 
             if (err instanceof Error) {

@@ -16,7 +16,8 @@ export const useEnrollStore = create<EnrolledService>((set) => ({
     isEnrolled: false,
     fetchingEnrollments: false,
     enrollUser: async (userId: string, courseId: string, { email, amount }: { email: string, amount: number }) => {
-        set({ isEnrolled: true })
+        set({ isEnrolled: true });
+        console.log( courseId)
         try {
             const response = await axiosInstance.post(`/enroll/enroll-student/${userId}/${courseId}`, {
                 email,
@@ -36,6 +37,7 @@ export const useEnrollStore = create<EnrolledService>((set) => ({
             // toast.success(response.data);
             // return response.data
         } catch (error: any) {
+            console.log(error)
             const message = error?.response?.data?.message ?? error?.message ?? "An unknown error occurred";
             toast.error(message);
             set({ isEnrolled: false });

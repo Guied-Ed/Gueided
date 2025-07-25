@@ -42,9 +42,9 @@ const enrollStudent = async (req: Request, res: Response) => {
         }
 
         const courseIDArray = courseIds.split(",");
-        const enrollments = [];
-        const failedCourses = [];
-        const authorizationUrls = [];
+        const enrollments: any[] = [];
+        const failedCourses: { courseId: string; error: string }[] = [];
+        const authorizationUrls: { courseId: string; authorization_url: string }[] = [];
 
         for (const courseId of courseIDArray) {
             const course = await Course.findById(courseId);
@@ -54,17 +54,21 @@ const enrollStudent = async (req: Request, res: Response) => {
             }
 
             const existingEnrollment = await Enrollment.findOne({ courseId, userId });
-            if(existingEnrollment){
-              res.status(404).json({message: "Your are Already Enrolled"});
-                return 
-            }
-            // if (existingEnrollment) {
-            //     failedCourses.push({ courseId, error: "Already enrolled" });
-            //     continue;
+            // console.log(existingEnrollment)
+            // if(existingEnrollment){
+            //   res.status(404).json({message: "Your are Already Enrolled"});
+            //     return 
             // }
+            if (existingEnrollment) {
+                failedCourses.push({ courseId, error: "Already enrolled" });
+                continue;
+            }
+
+      
 
             // Create new enrollment
             const newEnrollment = new Enrollment({ courseId, userId });
+            console.log(newEnrollment)
             await newEnrollment.save();
             enrollments.push(newEnrollment);
 
@@ -85,9 +89,6 @@ const enrollStudent = async (req: Request, res: Response) => {
                     }
                 }
             );
-
-           
-
             // Save payment reference
             newEnrollment.paymentReference = response.data.data.reference;
             await newEnrollment.save();
@@ -147,9 +148,9 @@ const verifyPayment = async (req: Request, res: Response) => {
                         $addToSet: { enrolledCourses: enrollment.courseId }
                     });
                 }
-              
-               await Cart.findByIdAndDelete(enrollments[0].userId, {courses:[]});
- 
+
+                await Cart.findByIdAndDelete(enrollments[0].userId, { courses: [] });
+
 
                 res.redirect(`http://localhost:5173/payment-success?reference=${reference}`);
                 return;
@@ -171,10 +172,10 @@ const verifyPayment = async (req: Request, res: Response) => {
 const getAllEnrolledCourses = async (req: Request<{ userId: string }>, res: Response) => {
     try {
         let { userId } = req.params;
-        userId = userId.trim(); 
+        userId = userId.trim();
 
 
-       
+
         const user = await User.findById(userId);
         if (!user) {
             res.status(404).json({ message: "User not found" });
@@ -193,7 +194,7 @@ const getAllEnrolledCourses = async (req: Request<{ userId: string }>, res: Resp
         // Fetch the enrolled courses
         const courses = await Course.find({ _id: { $in: enrolledCousesIds } })
             .populate("instructor", "firstName lastName") // Populate instructor details
-            .select("tittle description videos.tittle videos.videoFilePath");
+            .select("tittle description videos.tittle videos.videoFilePath comments _id");
 
         res.status(200).json({ courses });
 

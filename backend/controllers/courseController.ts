@@ -3,7 +3,7 @@
 import { Request, Response } from 'express';
 import { uploadToCloudinary } from '../middleware/multerMiddleWare';
 import Course from '../models/courseSchema';
-import { categories,CategoryType,SubCategoryType } from '../Constants/categoiers';
+import { categories, CategoryType, SubCategoryType } from '../Constants/categoiers';
 
 interface multerFile {
   buffer: Buffer;
@@ -21,7 +21,7 @@ export interface CustomRequest extends Request {
     subCategory?: string;
     price: number;
     level: string;
-    videoDetails?: string; 
+    videoDetails?: string;
   }
 }
 
@@ -38,18 +38,18 @@ const uploadFilesAndCreateCourse = async (req: CustomRequest, res: Response): Pr
   const { thumbnail, videos } = req.files || {};
   const { tittle, description, category, subCategory, level } = req.body;
 
-// Validate Categories //
+  // Validate Categories //
 
-if(!(category in categories)){
-  res.status(404).json({message:"Invalid Category"})
-  return;
-}
+  if (!(category in categories)) {
+    res.status(404).json({ message: "Invalid Category" })
+    return;
+  }
 
-// Validate Sub Categories //
-if(subCategory && !(categories[category as CategoryType] as SubCategoryType[]).includes(subCategory as SubCategoryType)){
-  res.status(400).json({ error: 'Invalid subcategory for the selected category' });
-  return;
-}
+  // Validate Sub Categories //
+  if (subCategory && !(categories[category as CategoryType] as SubCategoryType[]).includes(subCategory as SubCategoryType)) {
+    res.status(400).json({ error: 'Invalid subcategory for the selected category' });
+    return;
+  }
 
 
   // Convert duration and price to numbers
@@ -147,29 +147,29 @@ const getAllCourses = async (req: Request, res: Response) => {
   // Build Query
 
   // 1 Filtering 
-  const newQuery = {...req.query};
-  const exludedQueries = ["page","sort","limit","fields"];
-  exludedQueries.forEach(el=>  delete newQuery[el]);
+  const newQuery = { ...req.query };
+  const exludedQueries = ["page", "sort", "limit", "fields"];
+  exludedQueries.forEach(el => delete newQuery[el]);
 
   //2 Advanced Filtering
   let queryString = JSON.stringify(newQuery);
-  queryString = queryString.replace(/\b(gte|gt|lte|lt)\b/g,match => `$${match}`);
+  queryString = queryString.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
   const filters = JSON.parse(queryString);
   try {
 
     // Execute Query //
-    let query =  Course.find(filters).populate("instructor", "firstName lastName email").select("-videos");
+    let query = Course.find(filters).populate("instructor", "firstName lastName email").select("-videos");
 
     // Sorting
-    if(typeof req.query.sort=== "string"){
+    if (typeof req.query.sort === "string") {
       const sortBy = req.query.sort.split(",").join(" ");
       query = query.sort(sortBy);
     }
 
-    if(typeof req.query.fields === "string"){
+    if (typeof req.query.fields === "string") {
       const fields = req.query.fields.split("").join(" ");
       query = query.select(fields);
-    }else{
+    } else {
       query = query.select("-_v")
     }
     // 3 Field Limiting
@@ -185,11 +185,11 @@ const getAllCourses = async (req: Request, res: Response) => {
   }
 }
 
-const getMyCourses = async (req:Request, res:Response) => {
-  const {userId} = req.params;
-  try{
-    
-  }catch{
+const getMyCourses = async (req: Request, res: Response) => {
+  const { userId } = req.params;
+  try {
+
+  } catch {
 
   }
 }
@@ -199,13 +199,14 @@ const getASingleCourse = async (req: Request, res: Response) => {
 
   try {
     const course = await Course.findById(courseId)
-      .populate("instructor", "firstName lastName email biography courses")
-      .select("-__v") // Exclude unnecessary fields
+      .populate( "instructor", "firstName lastName email biography courses")
+     
+      .select("+comments") // Exclude unnecessary fields
       .lean(); // Convert Mongoose document to a plain object
 
     if (!course) {
-    res.status(404).json({ message: "Course not found" });
-    return
+      res.status(404).json({ message: "Course not found" });
+      return
     }
 
     // Compute average ratings
@@ -320,91 +321,92 @@ const deleteCourse = async (req: Request, res: Response) => {
 
 }
 
-const getAllInstructorCourses = async (req:Request<{userId:string}>,res:Response) => {
-  try{
-    const {userId} = req.params;
-    const courses = await Course.find({instructor:userId});
-    if(!courses){
-      res.status(404).json({message:"No courses Found Yet"})
+const getAllInstructorCourses = async (req: Request<{ userId: string }>, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const courses = await Course.find({ instructor: userId });
+    if (!courses) {
+      res.status(404).json({ message: "No courses Found Yet" })
     }
-    res.status(200).json({courses});
-  }catch(err){
+    res.status(200).json({ courses });
+  } catch (err) {
     console.log(err);
-    res.status(404).json({message:err}) 
+    res.status(404).json({ message: err })
   }
 }
 
 
-const getCategories = (req:Request,res:Response) =>{
+const getCategories = (req: Request, res: Response) => {
   try {
-    res.status(200).json({categories});
+    res.status(200).json({ categories });
   } catch (error) {
     console.error('Error fetching categories:', error);
     res.status(500).json({ error: 'Failed to fetch categories' });
   }
 }
 
-const addRating = async (req:Request,res:Response) =>{
-  const {courseId} = req.params;
-  const {userId,rating} = req.body;
-  try{
+const addRating = async (req: Request, res: Response) => {
+  const { courseId } = req.params;
+  const { userId, rating } = req.body;
+  try {
     const course = await Course.findById(courseId);
     const existingRating = course?.ratings.find(rating => rating.userId === userId);
-    if(existingRating){
-      res.status(404).json({message:"You have already Rate this Course"})
+    if (existingRating) {
+      res.status(404).json({ message: "You have already Rate this Course" })
       return
     }
 
-    const updateCourse = await Course.findByIdAndUpdate(courseId,{
-      $push:{
-        ratings:{
-          userId,rating
+    const updateCourse = await Course.findByIdAndUpdate(courseId, {
+      $push: {
+        ratings: {
+          userId, rating
         }
       }
-    },{new:true})
-    if(!updateCourse){
-      res.status(404).json({message:"Course not found"});
+    }, { new: true })
+    if (!updateCourse) {
+      res.status(404).json({ message: "Course not found" });
       return
     }
-    res.status(200).json({message:"Course Rated Successfully"})
+    res.status(200).json({ message: "Course Rated Successfully" })
 
-  }catch(err){
-    res.status(500).json({message:err})
-  }
-}
-
-const addComment = async (req:Request,res:Response)=>{
-  try {
-      const {courseId} = req.params;
-      const {userId,comment} = req.body;
-      
-      const course = await Course.findById(courseId);
-      const existingComment = course?.comments.find(c => c.userId.toString() === userId.toString() && c.comment === comment);
-
-      
-      if(existingComment) {
-        res.status(400).json({message:"You have added a comment already"});
-        return
-      }
-
-      const updateCourse = await Course.findByIdAndUpdate(courseId,{
-        $push:{
-          comments:{
-            userId, comment
-          }
-        }
-      })
-      
-      if(!updateCourse) {
-        res.status(404).json({message:"Course not Found"})
-        return
-      }
-      res.status(200).json({message:"Comment Added"})
   } catch (err) {
-    res.status(500).json({message:err})
+    res.status(500).json({ message: err })
+  }
+}
+
+const addComment = async (req: Request, res: Response) => {
+  try {
+    const { courseId } = req.params;
+    const { userId, comment } = req.body;
+
+    const course = await Course.findById(courseId);
+    const existingComment = course?.comments.find(c => c.userId.toString() === userId.toString() && c.comment === comment);
+
+
+  
+    if (existingComment) {
+      res.status(400).json({ message: "That Comment has been added already" });
+      return
+    }
+
+    const updateCourse = await Course.findByIdAndUpdate(courseId, {
+      $push: {
+        comments: {
+          userId, comment
+        }
+      }
+    })
+
+    if (!updateCourse) {
+      res.status(404).json({ message: "Course not Found" })
+      return
+    }
+    res.status(200).json({ message: "Comment Added" })
+  } catch (err) {
+    res.status(500).json({ message: err })
   }
 }
 
 
 
-export { uploadFilesAndCreateCourse, getAllCourses, updateCourse, deleteCourse, getASingleCourse, getAllInstructorCourses,getCategories,addRating, addComment };
+export { uploadFilesAndCreateCourse, getAllCourses, updateCourse, deleteCourse, getASingleCourse, getAllInstructorCourses, getCategories, addRating, addComment };
