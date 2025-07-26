@@ -28,6 +28,7 @@ interface CourseDetailBannerProps {
     level: string;
     price: number;
     ratings: any[];
+    comments: any[]
     thumbnail: string;
     tittle: string;
     updatedAt: string;
@@ -52,6 +53,8 @@ const CourseDetailBanner: React.FC<CourseDetailBannerProps> = ({ singleCourseCon
   const { authUser } = useAuthStore() as unknown as { authUser: { user: any } };
   const userEmail = authUser?.user?.email;
   const userID = authUser?.user._id;
+  const [userComments, setUserComments] = useState<string[] | null>([]);
+
 
   const openModal = (video: Video) => {
     setSelectedVideo(video);
@@ -97,7 +100,7 @@ const CourseDetailBanner: React.FC<CourseDetailBannerProps> = ({ singleCourseCon
 
             <div className="flex justify-between gap-4 pt-4">
               <button className="flex-1 py-2 px-4 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 transition"
-              onClick={()=> setModal(false)}
+                onClick={() => setModal(false)}
               >
                 🔍 Keep Exploring
               </button>
@@ -257,6 +260,50 @@ const CourseDetailBanner: React.FC<CourseDetailBannerProps> = ({ singleCourseCon
             </div>
           </div>
         </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="mt-16 bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden"
+        >
+          <div className="p-8">
+            <p className="text-2xl font-bold text-center text-gray-800 dark:text-white mb-8">
+              See What {singleCourseContainer.comments.length}  {singleCourseContainer?.comments?.length === 1 ? "Student" : "Students"}  {singleCourseContainer?.comments?.length === 1 ? "is" : "are"}  Saying About This Course
+            </p>
+
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {singleCourseContainer?.comments?.map((comment, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="bg-gray-100 dark:bg-gray-700 rounded-xl p-6 shadow-md hover:shadow-xl transition-all duration-300"
+                >
+                  <div className="flex items-center gap-4 mb-4">
+                    {/* Placeholder Avatar */}
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold">
+                      {comment.userId?.firstName?.[0] || "U"}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-800 dark:text-white">
+                        {comment.userId?.firstName || "Anonymous"}
+                      </p>
+                      <p className="text-sm text-gray-500">Verified Student</p>
+                    </div>
+                  </div>
+
+                  <p className="text-gray-700 dark:text-gray-300 italic">
+                    “{comment.comment}”
+                  </p>
+
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+
       </div>
 
       {/* Video Modal */}
@@ -287,8 +334,12 @@ const CourseDetailBanner: React.FC<CourseDetailBannerProps> = ({ singleCourseCon
               <h3 className="text-xl font-bold text-gray-900 dark:text-white">{selectedVideo.tittle}</h3>
             </div>
           </motion.div>
+
+
+
         </div>
       )}
+
     </div>
   );
 };

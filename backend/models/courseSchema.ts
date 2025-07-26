@@ -123,6 +123,7 @@ const courseSchema = new Schema<CourseModel>({
         {
             userId:{
                 type:mongoose.Schema.Types.ObjectId,
+                ref:"User",
                 required:[true,'User id is required']
             },
             comment:{

@@ -32,7 +32,7 @@ interface Course {
     ratings: any[];
     thumbnail: string;
     tittle: string;
-    comment:string[];
+    comments:string[];
     updatedAt: string;
     videos: any[];
     __v: number;
@@ -88,7 +88,7 @@ const getStoredCart = () =>{
     const storedCart = localStorage.getItem ("cart");
     return storedCart ? JSON.parse(storedCart) : [];
 }
-export const useCourseStore = create<CourseState>((set) => ({
+export const useCourseStore = create<CourseState>((set, get) => ({
     
     courseCarts: getStoredCart(),
     courseContainer:[],
@@ -150,6 +150,7 @@ export const useCourseStore = create<CourseState>((set) => ({
             const response = await axiosInstance.get('/course/get-courses', {
                 params
             });
+           
             console.log(response.data.data);
             set({ courseContainer: response.data.data })
             set({ isFetchingData: false })
@@ -174,8 +175,11 @@ export const useCourseStore = create<CourseState>((set) => ({
     getCourse: async (couseId: string | undefined) => {
         set({ isFetchingSingleData: true })
         try {
+
             const response = await axiosInstance.get(`/course/get-single-course/${couseId}`);
+            console.log(get().singleCourseContainer)
             console.log(response);
+            
             set({ singleCourseContainer: response.data.data });
             set({ isFetchingSingleData: false });
         } catch (error) {

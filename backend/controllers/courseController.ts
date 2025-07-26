@@ -199,10 +199,10 @@ const getASingleCourse = async (req: Request, res: Response) => {
 
   try {
     const course = await Course.findById(courseId)
-      .populate( "instructor", "firstName lastName email biography courses")
-     
-      .select("+comments") // Exclude unnecessary fields
-      .lean(); // Convert Mongoose document to a plain object
+      .populate("instructor", "firstName lastName email biography courses")
+      .populate("comments.userId", "firstName lastName")
+      .select("")
+      .lean(); 
 
     if (!course) {
       res.status(404).json({ message: "Course not found" });
