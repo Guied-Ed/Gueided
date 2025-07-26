@@ -268,12 +268,16 @@ const CourseDetailBanner: React.FC<CourseDetailBannerProps> = ({ singleCourseCon
           className="mt-16 bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden"
         >
           <div className="p-8">
-            <p className="text-2xl font-bold text-center text-gray-800 dark:text-white mb-8">
+
+            {
+              singleCourseContainer.comments.length > 0 ?<p className="text-2xl font-bold text-center text-gray-800 dark:text-white mb-8">
               See What {singleCourseContainer.comments.length}  {singleCourseContainer?.comments?.length === 1 ? "Student" : "Students"}  {singleCourseContainer?.comments?.length === 1 ? "is" : "are"}  Saying About This Course
-            </p>
+            </p> : <p className="text-2xl font-bold text-center text-gray-800 dark:text-white mb-8">This Course Has no comments from students Yet</p>
+            }
+         
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {singleCourseContainer?.comments?.map((comment, index) => (
+              {singleCourseContainer?.comments && singleCourseContainer?.comments?.map((comment, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, y: 20 }}
