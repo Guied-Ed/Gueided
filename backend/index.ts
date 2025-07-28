@@ -18,7 +18,7 @@ app.use('/api/enroll',enrollRouter);
 app.use('/api',cartRouter);
 app.use('/api',userRouter);
 app.use('/api/course',courseRouter);
-const port: number = parseInt(process.env.PORT || '3000',10);
+const port: number = parseInt(process.env.PORT || '9000',10);
 
 connectDB();
 app.listen(port, (): void => {

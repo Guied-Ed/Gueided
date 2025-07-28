@@ -10,9 +10,12 @@ interface EnrolledService {
     verifyPayment?: (reference: any) => Promise<void>
     getAllEnrollCourses?: (userId: string) => Promise<void>
     fetchingEnrollments: boolean
+    getNoOfEnrollmentForInstructor:(instructorId :string) => Promise<void>
+  instructorStudentCount:number
 }
 
 export const useEnrollStore = create<EnrolledService>((set) => ({
+   instructorStudentCount:0,
     isEnrolled: false,
     fetchingEnrollments: false,
     enrollUser: async (userId: string, courseId: string, { email, amount }: { email: string, amount: number }) => {
@@ -44,6 +47,18 @@ export const useEnrollStore = create<EnrolledService>((set) => ({
         }
         finally {
             set({ isEnrolled: false })
+        }
+    },
+
+    getNoOfEnrollmentForInstructor : async (instructorId:string) => {
+        try {
+            const response = await axiosInstance.get(`/enroll/student-count-single-instructor/${instructorId}`);
+            console.log(response);
+            set((state)=> ({
+                ...state,  instructorStudentCount: response.data.numberOfStudents
+            }));
+        } catch (error) {
+            console.log(error)
         }
     },
 

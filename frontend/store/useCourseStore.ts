@@ -165,7 +165,9 @@ export const useCourseStore = create<CourseState>((set, get) => ({
         try {
             const response = await axiosInstance.get(`/course/get-instructor-courses/${userId}`)
             console.log(response.data);
-            set({ instructorCoursesContainer: response.data.courses });
+            set((state)=> ({
+                ... state, instructorCoursesContainer:response.data.courses
+            }))
             set({ isFetchingInstructorCourses: false });
         } catch (error) {
             console.log(error);

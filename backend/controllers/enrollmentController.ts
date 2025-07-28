@@ -6,6 +6,7 @@ import axios from 'axios';
 import dotenv from 'dotenv'
 import User from "../models/userSchema";
 import Cart from "../models/courseCartSchema";
+import mongoose from "mongoose";
 dotenv.config();
 
 interface EnrollReq {
@@ -64,7 +65,7 @@ const enrollStudent = async (req: Request, res: Response) => {
                 continue;
             }
 
-      
+
 
             // Create new enrollment
             const newEnrollment = new Enrollment({ courseId, userId });
@@ -114,6 +115,87 @@ const enrollStudent = async (req: Request, res: Response) => {
     } catch (err) {
         console.log(err);
         res.status(500).json({ err });
+    }
+};
+
+const getStudentsPerInstructors = async (req: Request, res: Response) => {
+    try {
+        const result = await Enrollment.aggregate([
+            {
+                $lookup: {
+                    from: "courses",
+                    localField: "courseId",
+                    foreignField: "_id",
+                    as: "courseDetails"
+                }
+            },
+            {
+                $unwind: "$courseDetails"
+            },
+            {
+                $group: {
+                    _id: "$courseDetails.instructor",
+                    totalStudents: { $addToSet: "$userId" }
+                }
+            },
+            {
+                $project: {
+                    instructorId: "$_id",
+                    numberOfStudents: { $size: "$totalStudents" },
+                    _id: 0
+                }
+            }
+
+        ]);
+         res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({message:error, success:false})
+    }
+}
+
+const getStudentCountForSingleInstructor = async (req: Request, res: Response) => {
+    try {
+        const { instructorId } = req.params;
+
+        const result = await Enrollment.aggregate([
+            {
+                $lookup: {
+                    from: "courses",
+                    localField: "courseId",
+                    foreignField: "_id",
+                    as: "courseDetails"
+                }
+            },
+            { $unwind: "$courseDetails" },
+            {
+                $match: {
+                    "courseDetails.instructor": new mongoose.Types.ObjectId(instructorId)
+                }
+            },
+            {
+                $group: {
+                    _id: "$courseDetails.instructor",
+                    totalStudents: { $addToSet: "$userId" }
+                }
+            },
+            {
+                $project: {
+                    instructorId: "$_id",
+                    numberOfStudents: { $size: "$totalStudents" },
+                    _id: 0
+                }
+            }
+        ]);
+
+        if (result.length === 0) {
+            res.status(404).json({ message: "Instructor not found or no enrollments." });
+            return
+        }
+
+        res.status(200).json(result[0]);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Failed to get student count." });
     }
 };
 
@@ -236,4 +318,4 @@ const getSingleEnrolledCourse = async (req: Request<{ userId: string, courseId: 
     }
 }
 
-export { enrollStudent, verifyPayment, getAllEnrolledCourses, getSingleEnrolledCourse }
+export { enrollStudent, verifyPayment, getAllEnrolledCourses, getSingleEnrolledCourse, getStudentCountForSingleInstructor, getStudentsPerInstructors }

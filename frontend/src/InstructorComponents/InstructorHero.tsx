@@ -4,12 +4,23 @@ import { motion } from 'framer-motion'
 import { X, ArrowRight, BookOpen, Clock, Heart, Star } from 'lucide-react'
 import InstructorSignUp from './InstructorSignUp'
 import InstructorSignIn from './InstructorSignIn'
-
+import { useAuthStore } from '../../store/useAuthStore'
+import { useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
+import { AuthResponse } from '../../store/useAuthStore'
 const InstructorHero = () => {
     const [showModal, setShowModal] = useState(false)
     const [isSignUp, setIsSignUp] = useState(true)
-
+    const { authUser } = useAuthStore();
+    const navigate = useNavigate();
+    console.log(authUser)
     const toggleModal = () => {
+        if (authUser && (authUser as AuthResponse)?.user.role === "instructor") {
+            console.log(authUser)
+            navigate("/course/set-up")
+        } else {
+            // toast.error("Sign in with Your instructor Account or Craete One")
+        }
         setShowModal(!showModal)
     }
 
@@ -23,6 +34,9 @@ const InstructorHero = () => {
     return (
         <div className='bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 w-full min-h-screen flex flex-col lg:flex-row items-center justify-center p-6 md:p-12'>
             {/* Left Content */}
+
+
+
             <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -32,7 +46,7 @@ const InstructorHero = () => {
                 <h1 className='text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400'>
                     Share Your Knowledge, Inspire the Future!
                 </h1>
-                
+
                 <p className='text-lg text-gray-600 dark:text-gray-300'>
                     Join our platform of passionate educators and create impactful learning experiences.
                 </p>
@@ -48,16 +62,20 @@ const InstructorHero = () => {
                     ))}
                 </div>
 
+
+
                 <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={toggleModal}
                     className='w-full sm:w-64 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2'
                 >
-                    Get Started
+                    Go To Dashboard
                     <ArrowRight className="w-4 h-4" />
                 </motion.button>
             </motion.div>
+
+
 
             {/* Right Image */}
             <motion.div
@@ -66,10 +84,10 @@ const InstructorHero = () => {
                 transition={{ duration: 0.8, delay: 0.3 }}
                 className='max-w-xl lg:max-w-2xl'
             >
-                <img 
-                    src={InstructorBanner} 
-                    alt="Instructor teaching" 
-                    className='w-full h-auto object-contain drop-shadow-2xl' 
+                <img
+                    src={InstructorBanner}
+                    alt="Instructor teaching"
+                    className='w-full h-auto object-contain drop-shadow-2xl'
                 />
             </motion.div>
 
@@ -83,7 +101,7 @@ const InstructorHero = () => {
                         transition={{ duration: 0.3, ease: 'easeInOut' }}
                         className='bg-white dark:bg-gray-800 p-6 rounded-xl shadow-2xl w-full max-w-md relative border border-gray-200 dark:border-gray-700'
                     >
-                        <button 
+                        <button
                             className='absolute top-4 right-4 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors'
                             onClick={toggleModal}
                         >
@@ -99,14 +117,14 @@ const InstructorHero = () => {
                             </p>
                         </div>
 
-                        {isSignUp ? 
-                            <InstructorSignUp setShowModal={setShowModal} /> : 
+                        {isSignUp ?
+                            <InstructorSignUp setShowModal={setShowModal} /> :
                             <InstructorSignIn setShowModal={setShowModal} />
                         }
 
                         <div className="mt-4 text-center text-sm text-gray-500 dark:text-gray-400">
-                            <button 
-                                onClick={() => setIsSignUp(!isSignUp)} 
+                            <button
+                                onClick={() => setIsSignUp(!isSignUp)}
                                 className="text-blue-600 dark:text-blue-400 hover:underline"
                             >
                                 {isSignUp ? "Already have an account? Sign In" : "Don't have an account? Sign Up"}

@@ -2,14 +2,34 @@ import { create } from 'zustand';
 import { axiosInstance } from '../lib/axios';
 import toast from 'react-hot-toast';
 
+interface User {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    role: string;
+    email: string;
+    isVerified: boolean;
+    lastLogin: string;
+    biography: string;
+    courses: string[];
+    enrolledCourses: string[];
+    __v: number;
+}
+
+export interface AuthResponse {
+    success: boolean;
+    user: User;
+}
+
+
 interface AuthState {
-    authUser: null | string
+    authUser: null | string | AuthResponse
     isLoggingIn: boolean,
     isSigningUp: boolean,
     isCheckingAuth: boolean,
     isVerifyingEmail: boolean,
     checkAuth: () => Promise<void>,
-    signIn: (formData: object) => Promise<void>,
+    signIn: (formData: object) => Promise<boolean>,
     signUp: (formData: object) => Promise<void>,
     logout: () => Promise<void>,
     result: boolean,
@@ -22,6 +42,7 @@ interface AuthState {
     sendingEmailToUser: boolean
     resetPassword: (password: string, token: string) => Promise<boolean>
     resetingPassword: boolean
+    
 }
 
 
@@ -99,7 +120,7 @@ export const useAuthStore = create<AuthState>((set) => ({
             set({ authUser: response.data })
             toast.success("Successfully logged in")
             set({ result: true, showForgotPasswordText: false });
-
+            return true
 
         } catch (err) {
             set({ isLoggingIn: false })
@@ -109,9 +130,10 @@ export const useAuthStore = create<AuthState>((set) => ({
                 toast.error("Something went wrong")
             }
             set({ result: false, showForgotPasswordText: true })
-
+            return false
         } finally {
             set({ isLoggingIn: false })
+           
         }
     },
 

@@ -13,7 +13,7 @@ const isInstructor = async (req: Request, res: Response, next: NextFunction) => 
   // Fetch the user from the database based on the userId
   const user = await User.findById(userId);
   if (user?.role !== 'instructor') {
-    res.status(403).json({ message: 'Only instructors can create courses' })
+    res.status(403).json({ message: 'Only instructors can access this resources' })
     return;
   }
 

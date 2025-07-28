@@ -12,7 +12,8 @@ const enrollMentSchema = new Schema<IEnrollment>({
         type:Schema.Types.ObjectId,
         ref:"User",
         required:[true, "Usert ID is Required"]
-    },courseId:{
+    },
+    courseId:{
         type:Schema.Types.ObjectId,
         ref:"Course",
         required:[true, "courseId is required"]

@@ -2,32 +2,49 @@ import React, { useEffect } from 'react'
 import { useCourseStore } from '../../../store/useCourseStore'
 import PieChart from '../DashboardVisuals/PieChart';
 import BarChat from '../DashboardVisuals/BarChat';
+import { useAuthStore } from '../../../store/useAuthStore';
+import { useEnrollStore } from '../../../store/useEnrollStore';
 
 const Home = () => {
-    const { courseContainer, getCourses,instructorCoursesContainer} = useCourseStore();
-    
+    const { courseContainer, getCourses, instructorCoursesContainer, getInstructorCourses } = useCourseStore();
+    const { authUser, } = useAuthStore() as { authUser: { user: { _id: string, email: string, firstName: string, lastName: string, biography: string } } | null, checkAuth: () => void, isCheckingAuth: boolean };
+    const { getNoOfEnrollmentForInstructor, instructorStudentCount } = useEnrollStore()
+    console.log(authUser)
+    const userId = authUser?.user._id
+
     useEffect(() => {
-        getCourses()
-    }, [])
+        if (userId) {
+            getNoOfEnrollmentForInstructor(userId);
+            getInstructorCourses(userId);
+        }
+
+    }, []);
+
+ const totalComments = instructorCoursesContainer?.reduce((acc: number, course: any) => {
+  return acc + (course.comments?.length || 0);
+}, 0);
+
+
     
+
     const stats = [
-        { 
-            title: "Courses", 
-            value: instructorCoursesContainer?.length || 0, 
-            bg: "bg-green-500", 
-            border: "border-green-500" 
+        {
+            title: "Courses",
+            value: instructorCoursesContainer?.length || 0,
+            bg: "bg-green-500",
+            border: "border-green-500"
         },
-        { 
-            title: "Students", 
-            value: 26, 
-            bg: "bg-blue-800", 
-            border: "border-blue-800" 
+        {
+            title: "Students",
+            value: instructorStudentCount && instructorStudentCount,
+            bg: "bg-blue-800",
+            border: "border-blue-800"
         },
-        { 
-            title: "Reviews", 
-            value: 1000, 
-            bg: "bg-purple-600", 
-            border: "border-purple-600" 
+        {
+            title: "Reviews",
+            value: totalComments,
+            bg: "bg-purple-600",
+            border: "border-purple-600"
         }
     ];
 
@@ -36,7 +53,7 @@ const Home = () => {
             {/* Stats Cards */}
             <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8'>
                 {stats.map((stat, index) => (
-                    <div 
+                    <div
                         key={index}
                         className={`${stat.bg} ${stat.border} border-2 rounded-lg p-6 flex flex-col items-center justify-center gap-3 text-white transition-all hover:scale-[1.02]`}
                     >

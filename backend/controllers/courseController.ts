@@ -326,7 +326,8 @@ const getAllInstructorCourses = async (req: Request<{ userId: string }>, res: Re
     const { userId } = req.params;
     const courses = await Course.find({ instructor: userId });
     if (!courses) {
-      res.status(404).json({ message: "No courses Found Yet" })
+      res.status(404).json({ message: "No courses Found Yet" });
+      return;
     }
     res.status(200).json({ courses });
   } catch (err) {

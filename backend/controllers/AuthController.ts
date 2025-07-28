@@ -201,6 +201,7 @@ const resetPassword = async (req: Request<{ token: string }, {}, resetPassord>, 
 
     } catch (err: unknown) {
         res.status(500).json({ success: false, message: err });
+        
     }
 }
 

@@ -4,7 +4,7 @@ import { Eye, EyeOff, Loader, Lock, Mail, User } from 'lucide-react';
 import { useAuthStore } from '../../store/useAuthStore';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
-
+import { AuthResponse } from '../../store/useAuthStore';
 
 
 interface ChangeEvent {
@@ -20,7 +20,7 @@ interface showModal {
 const InstructorSignIn: React.FC<showModal> = ({ setShowModal }) => {
 
     const navigate = useNavigate();
-    const { result, isLoggingIn, signIn, signUp } = useAuthStore();
+    const { result, isLoggingIn, signIn, signUp, authUser } = useAuthStore();
 
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({ email: "", password: "", })
@@ -51,22 +51,25 @@ const InstructorSignIn: React.FC<showModal> = ({ setShowModal }) => {
         if (!formData.password) return toast.error("Password is required");
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) return toast.error("Invalid email format")
         if (formData.password.length < 5) return toast.error("Password must be at least 6 characters");
-
+      
         return true;
     }
 
-    const handleSubmit = (e: SubmitEvent) => {
+    const handleSubmit = async (e: SubmitEvent) => {
         e.preventDefault();
+        if ((authUser as AuthResponse)?.user.role !== "instructor") {
+            return toast.error("You can only sign in with your instructor account")
+        }
         const success = validateUser();
-        if (success === true) {
-            signIn(formData);
-            setShowModal(false);
-            if(result === true){
-                navigate("/course/set-up");
+        if (success) {
+            const success2 = await signIn(formData);
+            if (success2) {
                 setShowModal(false);
-            } else{
-                setShowModal(true);
+                navigate("/course/set-up");
+            } else {
+                setShowModal(true)
             }
+
         }
 
 
