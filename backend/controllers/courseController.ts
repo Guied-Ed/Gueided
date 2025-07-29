@@ -226,12 +226,15 @@ const getASingleCourse = async (req: Request, res: Response) => {
 
 
 const updateCourse = async (req: CustomRequest, res: Response): Promise<void> => {
+  // console.log("Checking......")
   const { courseId } = req.params;
   const { userId } = req.params;
   const { thumbnail, videos } = req.files || {};
+  // console.log(courseId, userId)
   const { tittle, description, duration, category, price, level } = req.body;
   try {
     const course = await Course.findById(courseId);
+    console.log(course)
     if (!course) {
       res.status(401).json({ message: "Course Not Found" })
     }

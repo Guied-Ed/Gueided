@@ -7,7 +7,7 @@ const CourseSetup = () => {
   const [selectedComponent, setSelectedComponent] = useState(<Home />);
   return (
     <div className="flex">
-      {/* Sidebar with dynamic width */}
+   
       <div className="w-1/4 h-screen fixed  ">
         <SideBar
           selectedComponent={selectedComponent}
@@ -15,7 +15,7 @@ const CourseSetup = () => {
         />
       </div>
 
-      {/* Main content automatically adjusting to sidebar width */}
+   
       <div className="ml-[calc(20%)] w-[calc(80%)] p-4">
         {selectedComponent}
       </div>

@@ -2,17 +2,28 @@ import { useCourseStore } from '../../../store/useCourseStore';
 import { useState } from 'react';
 import { useAuthStore } from '../../../store/useAuthStore';
 import { useEffect } from 'react';
-import { Edit, DeleteIcon, PlusCircle } from 'lucide-react';
+import { Edit, DeleteIcon, PlusCircle, Loader } from 'lucide-react';
+import { motion } from "framer-motion";
 
 const Courses = () => {
-  const { isFetchingInstructorCourses, instructorCoursesContainer, getInstructorCourses, deleteACourse } = useCourseStore();
-  const { authUser } = useAuthStore() as unknown as { authUser: { user: any } };
+  const { isFetchingInstructorCourses, instructorCoursesContainer, getInstructorCourses, deleteACourse, editCourse, editingCourse } = useCourseStore();
+  const { authUser, } = useAuthStore() as { authUser: { user: { _id: string, email: string, firstName: string, lastName: string, biography: string } } | null, checkAuth: () => void, isCheckingAuth: boolean };
   const userId = authUser?.user._id;
   const [showModal, setShowModal] = useState(false);
   const [id, setId] = useState<string | null>(null);
+  const [editModal, setEditModal] = useState(false);
+  const [editCourseId, setEditCourseId] = useState<string | null>(null);
+  const [selectedCourse, setSelectedCourse] = useState<any>(null);
+
+
+
+
 
   useEffect(() => {
-    getInstructorCourses(userId);
+    if (userId) {
+      getInstructorCourses(userId);
+    }
+
   }, []);
 
   const updateModal = (courseId: string) => {
@@ -21,9 +32,30 @@ const Courses = () => {
   }
 
   const finalDelete = () => {
-    deleteACourse(id, userId);
+    if (userId) {
+      deleteACourse(id, userId);
+    }
+
     setShowModal(false);
   }
+
+  const updateEditModal = (couseId: string) => {
+    const course = instructorCoursesContainer?.find(c => c._id === couseId);
+    if (course) {
+      setSelectedCourse(course)
+    }
+
+    setEditModal(true)
+    setEditCourseId(couseId);
+  }
+
+const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  if (!userId || !selectedCourse?._id) return;
+
+  editCourse(selectedCourse._id, userId, selectedCourse);
+};
+
 
   return (
     <div className="w-full w- p-4 md:p-6 bg-gray-100 dark:bg-gray-900 min-h-screen">
@@ -35,10 +67,10 @@ const Courses = () => {
             Manage and organize your course offerings
           </p>
         </div>
-        <button className="mt-4 md:mt-0 flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+        {/* <button className="mt-4 md:mt-0 flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors" >
           <PlusCircle size={18} />
           Add New Course
-        </button>
+        </button> */}
       </div>
 
       {/* Stats Cards */}
@@ -93,9 +125,9 @@ const Courses = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                      ${course.level === 'Beginner' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 
-                        course.level === 'Intermediate' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' : 
-                        'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'}`}>
+                      ${course.level === 'Beginner' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
+                        course.level === 'Intermediate' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
+                          'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'}`}>
                       {course.level}
                     </span>
                   </td>
@@ -104,11 +136,13 @@ const Courses = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex justify-end gap-4">
-                      <button className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300">
+                      <button className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300"
+                        onClick={() => updateEditModal(course._id)}
+                      >
                         <Edit size={18} />
                       </button>
-                      <button 
-                        onClick={() => updateModal(course._id)} 
+                      <button
+                        onClick={() => updateModal(course._id)}
                         className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
                       >
                         <DeleteIcon size={18} />
@@ -175,6 +209,64 @@ const Courses = () => {
           </div>
         </div>
       )}
+
+
+      {editModal && selectedCourse && (
+        <motion.div
+
+
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+
+        >
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl max-w-md w-full">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Edit Course</h2>
+            <form className="mt-4 space-y-4" onSubmit={handleSubmit}>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Title</label>
+                <input
+                  type="text"
+                  value={selectedCourse.tittle}
+                  onChange={(e) => setSelectedCourse({ ...selectedCourse, tittle: e.target.value })}
+                  className="mt-1 p-2 w-full rounded-md border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Price</label>
+                <input
+                  type="number"
+                  value={selectedCourse.price}
+                  onChange={(e) => setSelectedCourse({ ...selectedCourse, price: e.target.value })}
+                  className="mt-1 p-2 w-full rounded-md border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white"
+                />
+              </div>
+
+              {/* Add other fields like category, level, etc. similarly */}
+
+              <div className="flex justify-end space-x-4 mt-6">
+                <button
+                  type="button"
+                  onClick={() => setEditModal(false)}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 flex items-center justify-center"
+                >
+                  {
+                    editingCourse ?
+                      <Loader className='animate-spin' size={24} /> : "Save Changes"
+                  }
+
+                </button>
+              </div>
+            </form>
+          </div>
+        </motion.div>
+      )}
+
     </div>
   );
 };

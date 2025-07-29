@@ -79,7 +79,8 @@ interface CourseState {
     addToCart:(courseId:string, userId:string) => Promise<void>
     removeFromCart:(courseId:string, userId:string) => Promise<void>
     isRemovingFromCart:boolean
-
+    editCourse :  (courseId:string,userId:string, formData:any) => Promise<void>
+    editingCourse: boolean
     
 }
 
@@ -90,6 +91,7 @@ const getStoredCart = () =>{
 }
 export const useCourseStore = create<CourseState>((set, get) => ({
     
+    editingCourse: false,
     courseCarts: getStoredCart(),
     courseContainer:[],
     categoriesContainer: {
@@ -291,12 +293,39 @@ export const useCourseStore = create<CourseState>((set, get) => ({
             set({isRemovingFromCart:false})
         }
     },
+
+    // Todo
     addComment:async () => {
         try {
             const response = await axiosInstance.post
         } catch (error) {
             
         }
+    },
+editCourse: async (courseId: string, userId: string, formData: any) => {
+    set({ editingCourse: true });
+    try {
+        const response = await axiosInstance.put(`course/update-course/${courseId}/${userId}`, formData);
+
+        set((state) => ({
+            instructorCoursesContainer: state.instructorCoursesContainer
+                ? state.instructorCoursesContainer.map((course) =>
+                      course._id === courseId ? { ...course, ...formData } : course
+                  )
+                : []
+        }));
+        toast.success(response.data.message)
+
+        set({ editingCourse: false });
+        console.log(response);
+    } catch (error) {
+      if(error instanceof Error){
+                toast.error((error as any).response.data.message)
+            }
+        set({ editingCourse: false });
     }
+}
+
+    
 
 }))
