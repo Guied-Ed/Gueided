@@ -3,8 +3,8 @@ import { useAuthStore } from '../../../store/useAuthStore';
 import toast from 'react-hot-toast';
 import { useCourseStore } from '../../../store/useCourseStore';
 import { ArrowLeft, ArrowRight, Upload, FileVideo, Image } from 'lucide-react';
-import {Loader} from 'lucide-react'
-
+import { Loader } from 'lucide-react'
+import { LoaderCircle,Ellipsis } from 'lucide-react';
 const CreateCourse = () => {
   const [step, setStep] = useState(1);
   const [tittle, setTittle] = useState("");
@@ -68,7 +68,7 @@ const CreateCourse = () => {
     const success = validatDetails();
 
     if (success === true) {
-      const formData:any = new FormData();
+      const formData: any = new FormData();
 
       formData.append("tittle", tittle);
       formData.append("description", description);
@@ -99,6 +99,19 @@ const CreateCourse = () => {
 
   return (
     <div className="w-full p-4 md:p-6 bg-gray-100 dark:bg-gray-900 min-h-screen">
+
+      {
+        creatingCourse && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl max-w-md w-full flex items-center justify-center flex-col gap-2">
+
+            <div className='flex items-center justify-center gap-2'>
+              <p className='font-bold text-white '>Please Wait Your Course is being Created</p>
+              
+            </div>
+            <LoaderCircle className='animate-spin' size={50} color='white' />
+          </div>
+        </div>
+      }
       <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 md:p-8">
         {/* Progress Steps */}
         <div className="flex justify-between mb-8">
@@ -115,7 +128,7 @@ const CreateCourse = () => {
         </div>
 
         <h1 className='text-2xl md:text-3xl font-bold text-center mb-8 text-gray-800 dark:text-white'>Create Your Course</h1>
-        
+
         <form onSubmit={handleSubmit} className='space-y-6'>
           {step === 1 && (
             <div className="space-y-6">
@@ -237,11 +250,11 @@ const CreateCourse = () => {
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">PNG, JPG (MAX. 5MB)</p>
                   </div>
-                  <input 
-                    type="file" 
-                    accept="image/*" 
-                    onChange={handleThumbnailChange} 
-                    className="hidden" 
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleThumbnailChange}
+                    className="hidden"
                   />
                 </label>
                 {thumbnail && (
@@ -261,12 +274,12 @@ const CreateCourse = () => {
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">MP4, MOV (MAX. 100MB each)</p>
                   </div>
-                  <input 
-                    type="file" 
-                    accept="video/*" 
-                    onChange={handleVideoChange} 
-                    multiple 
-                    className="hidden" 
+                  <input
+                    type="file"
+                    accept="video/*"
+                    onChange={handleVideoChange}
+                    multiple
+                    className="hidden"
                   />
                 </label>
                 {videos && videos.length > 0 && (
@@ -346,7 +359,7 @@ const CreateCourse = () => {
                 disabled={creatingCourse}
                 className="px-6 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 disabled:bg-green-400"
               >
-                {creatingCourse ?   <Loader className="w-5 h-5 animate-spin" /> : 'Submit Course'}
+                Submit Your Course
               </button>
             )}
           </div>

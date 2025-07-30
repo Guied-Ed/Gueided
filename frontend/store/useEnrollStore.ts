@@ -1,6 +1,14 @@
 import { create } from 'zustand';
 import { axiosInstance } from '../lib/axios';
 import { toast } from 'react-hot-toast'
+
+
+interface enrolledStudents {
+    _id: string
+    email: string
+    firstName: string
+    lastName: string 
+}
 interface EnrolledService {
     isEnrolled?: boolean
 
@@ -12,9 +20,12 @@ interface EnrolledService {
     fetchingEnrollments: boolean
     getNoOfEnrollmentForInstructor:(instructorId :string) => Promise<void>
   instructorStudentCount:number
+  enrolledStudents : enrolledStudents[]
+  
 }
 
 export const useEnrollStore = create<EnrolledService>((set) => ({
+    enrolledStudents: [],
    instructorStudentCount:0,
     isEnrolled: false,
     fetchingEnrollments: false,
@@ -53,9 +64,10 @@ export const useEnrollStore = create<EnrolledService>((set) => ({
     getNoOfEnrollmentForInstructor : async (instructorId:string) => {
         try {
             const response = await axiosInstance.get(`/enroll/student-count-single-instructor/${instructorId}`);
-            console.log(response);
+            console.log(response.data.students);
+                        
             set((state)=> ({
-                ...state,  instructorStudentCount: response.data.numberOfStudents
+                ...state,  instructorStudentCount: response.data.numberOfStudents, enrolledStudents:response.data.students 
             }));
         } catch (error) {
             console.log(error)

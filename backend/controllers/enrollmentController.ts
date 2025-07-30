@@ -154,49 +154,66 @@ const getStudentsPerInstructors = async (req: Request, res: Response) => {
 }
 
 const getStudentCountForSingleInstructor = async (req: Request, res: Response) => {
-    try {
-        const { instructorId } = req.params;
+  try {
+    const { instructorId } = req.params;
 
-        const result = await Enrollment.aggregate([
-            {
-                $lookup: {
-                    from: "courses",
-                    localField: "courseId",
-                    foreignField: "_id",
-                    as: "courseDetails"
-                }
-            },
-            { $unwind: "$courseDetails" },
-            {
-                $match: {
-                    "courseDetails.instructor": new mongoose.Types.ObjectId(instructorId)
-                }
-            },
-            {
-                $group: {
-                    _id: "$courseDetails.instructor",
-                    totalStudents: { $addToSet: "$userId" }
-                }
-            },
-            {
-                $project: {
-                    instructorId: "$_id",
-                    numberOfStudents: { $size: "$totalStudents" },
-                    _id: 0
-                }
-            }
-        ]);
-
-        if (result.length === 0) {
-            res.status(404).json({ message: "Instructor not found or no enrollments." });
-            return
+    const result = await Enrollment.aggregate([
+      {
+        $lookup: {
+          from: "courses",
+          localField: "courseId",
+          foreignField: "_id",
+          as: "courseDetails"
         }
+      },
+      { $unwind: "$courseDetails" },
+      {
+        $match: {
+          "courseDetails.instructor": new mongoose.Types.ObjectId(instructorId)
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "userDetails"
+        }
+      },
+      { $unwind: "$userDetails" },
+      {
+        $group: {
+          _id: "$courseDetails.instructor",
+          students: {
+            $addToSet: {
+              _id: "$userDetails._id",
+              firstName: "$userDetails.firstName",
+              lastName: "$userDetails.lastName",
+              email:"$userDetails.email"
+            }
+          }
+        }
+      },
+      {
+        $project: {
+          instructorId: "$_id",
+          numberOfStudents: { $size: "$students" },
+          students: 1,
+          _id: 0
+        }
+      }
+    ]);
 
-        res.status(200).json(result[0]);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Failed to get student count." });
+    if (result.length === 0) {
+      res.status(404).json({ message: "Instructor not found or no enrollments." });
+      return;
     }
+
+    res.status(200).json(result[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to get student count." });
+  }
 };
 
 
