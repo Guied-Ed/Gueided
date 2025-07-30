@@ -8,7 +8,7 @@ ChartJS.register(ArcElement,Legend,Tooltip)
 interface PieChartProp {
     courseLength:number
     totalStudents:number
-    totalReviews:number
+    totalReviews:number | undefined 
 }
 const PieChart:React.FC<PieChartProp> = ({courseLength,totalStudents,totalReviews}) => {
 

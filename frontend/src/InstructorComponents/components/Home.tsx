@@ -69,9 +69,9 @@ const Home = () => {
                     <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Course Analytics</h2>
                     <div className="h-80 md:h-96">
                         <BarChat
-                            courseLength={courseContainer.length}
-                            totalReviews={1000}
-                            totalStudents={26}
+                            courseLength={instructorCoursesContainer?.length || 0}
+                            totalReviews={  totalComments}
+                            totalStudents={instructorStudentCount && instructorStudentCount}
                         />
                     </div>
                 </div>
@@ -80,9 +80,9 @@ const Home = () => {
                     <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Distribution</h2>
                     <div className="h-80 md:h-96">
                         <PieChart
-                            courseLength={courseContainer.length}
-                            totalReviews={1000}
-                            totalStudents={26}
+                            courseLength={instructorCoursesContainer?.length || 0}
+                           totalReviews={  totalComments}
+                            totalStudents={instructorStudentCount && instructorStudentCount}
                         />
                     </div>
                 </div>

@@ -8,8 +8,8 @@ ChartJS.register(ArcElement, Legend, Tooltip, LinearScale, CategoryScale, BarEle
 
 interface BarProps {
     courseLength: number
-    totalStudents: number
-    totalReviews: number
+    totalStudents: number 
+    totalReviews: number | undefined
 }
 const BarChat: React.FC<BarProps> = ({ totalReviews, totalStudents, courseLength }) => {
 
